@@ -20,6 +20,7 @@ Expo アプリの共通ベース。「この構成でアプリを作って」と
 * feature 同士は直接 import しない。別の feature のものが必要になったら、共通フォルダへ昇格させてから使う
 * 2 つ目の feature で必要になるまでは、先回りして共通化しない
 * データを取得する画面は、Loading・Error・Empty・Data の 4 状態を必ず扱う
+* スタイルは NativeWind の `className` で書く。`StyleSheet` は使わない
 * `useCallback`・`useMemo`・`React.memo` は書かない（React Compiler が自動でメモ化する）
 * `src/api/generated/` は生成物。手で編集しない
 * 日常の開発は開発ビルドで行う。Expo Go で動くことを前提にコードを書かない
