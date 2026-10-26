@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "name": "keel-template-expo",
+    "slug": "keel-template-expo",
+    "scheme": "keel-template-expo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "web": {
+      "output": "single"
+    },
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
