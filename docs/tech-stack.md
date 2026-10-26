@@ -8,13 +8,25 @@
 | ---------------------- | -------------------- | -------------------------------------------------------------------------------------------- |
 | ルーティング           | Expo Router          | ファイルベース。route の書き方は[フォルダ構成](./folder-structure.md#1-srcapp-は-route-専用) |
 | データ取得・キャッシュ | TanStack Query       |                                                                                              |
+| クライアント状態       | Jotai                | サーバー状態以外の状態。使い方は下の「クライアント状態（Jotai）」                            |
 | API クライアントの生成 | Orval                | OpenAPI 契約から、型・API 呼び出し関数・TanStack Query の hook を生成する                    |
 | 通信                   | 標準の `fetch`       | Orval の mutator に認証ヘッダと 401 処理を集約する                                           |
 | スタイル               | `StyleSheet`（標準） | アプリごとに変えてよい                                                                       |
 | 単体テスト             | Vitest（node 環境）  | 純粋なロジックだけが対象。方針は[テスト](./testing.md)                                       |
 | E2E テスト             | Playwright           | Web 版（react-native-web）が対象。方針は[テスト](./testing.md)                               |
 
-状態管理（サーバー状態以外）、フォームなどは未決。アプリごとに選び、そのアプリの `CLAUDE.md` に書く。
+フォームなどは未決。アプリごとに選び、そのアプリの `CLAUDE.md` に書く。新しいライブラリの追加は、事前に提案する。
+
+## クライアント状態（Jotai）
+
+サーバーの状態は TanStack Query が持つ。Jotai が持つのは、それ以外の状態（認証ユーザー、入力途中の下書き、UI の一時状態など）。
+
+* Provider は置かない。Provider なしで使うと既定のストアが使われる。
+* React Context は、変化の少ない値（テーマ・ロケールなど）と、ライブラリが要求する Provider（`QueryClientProvider` など）に限る。変化の多い値には使わない。
+* atom の置き場は、専用のフォルダを作らず、使うファイルに直接書いてよい（[フォルダ構成](./folder-structure.md#3-昇格ルール共通フォルダへの移動)）。
+* React の外（mutator など）から読み書きするときは、`getDefaultStore()` で取った既定のストアに `get` / `set` する。たとえば、API が 401 を返したときに、mutator が認証状態の atom を未ログインへ戻せる。
+* 永続化は `atomWithStorage` を使う。React Native では `createJSONStorage` に AsyncStorage を渡す。AsyncStorage は非同期なので、atom の値は Promise になり、現在の値を見て更新するときは `await` が要る。
+* **認証トークンなど秘密の値は、`atomWithStorage`（AsyncStorage）に入れない。** 保存先の規約は別に定める。
 
 ## API クライアントの生成（Orval）
 

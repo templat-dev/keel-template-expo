@@ -25,10 +25,9 @@ Expo アプリのフォルダ構成ルール。画面本体・hooks を機能単
 │   │   ├── generated/
 │   │   ├── mutator.ts
 │   │   └── query-client.ts
-│   ├── components/                # 複数 feature で使う共通 UI
+│   ├── components/                # 複数 feature で使う共通 UI（Loading・ErrorView・EmptyView など）
 │   ├── hooks/                     # 複数 feature で使う共通 hooks
 │   ├── utils/                     # 純粋な helper + 同居する test
-│   ├── providers/                 # 横断的な Context（認証など）。必要になったら作る
 │   ├── constants.ts
 │   └── theme.ts
 ├── e2e/                           # Playwright の E2E テスト（*.spec.ts）
@@ -57,7 +56,7 @@ tsconfig の `@/*` は `./src/*` を指す（例: `@/features/home/screens/home`
 置くもの
 
 * route ファイル（URL パラメータの読み取りと、文脈なしで決まる型変換・検証を含む）
-* `_layout`（Stack・Tabs の構成、画面名の一覧、画面タイトル、認証ガード、`unstable_settings`）と platform 別 layout
+* `_layout`（Stack・Tabs の構成、画面名の一覧、画面タイトル、認証ガード、ライブラリが要求する Provider、`unstable_settings`）と platform 別 layout
 * 純粋なリダイレクト、`+not-found`、`ErrorBoundary`、`SuspenseFallback`、`+native-intent` などの規約ファイル・export
 
 置かないもの（画面本体の側に置く）
@@ -119,8 +118,8 @@ typed routes
   * UI → `src/components/`
   * hooks → `src/hooks/`
   * 純粋な helper → `src/utils/`
-  * 横断的な Context → `src/providers/`
 * 2 つ目が出る前に、先回りして共通化しない。
+* 状態管理の atom は、専用のフォルダを作らない。使うファイル（hooks や components）に直接書いてよい。複数の feature で使うようになったら、上の昇格ルールに従う。
 
 ### 4. feature 間の依存
 
@@ -130,7 +129,7 @@ typed routes
 
 * `components/`: 複数 feature で使う汎用 UI のみ。named export は 1 ファイル 1 つ。ファイル名は kebab-case（`bar-chart.tsx`）。
 * 肥大化した component は folder 化して `index.tsx` を root にし、private な sub-component を同居させる（import path は変わらない）。
-* `hooks/`・`utils/`・`providers/`: 複数 feature で使うものだけを置く。
+* `hooks/`・`utils/`: 複数 feature で使うものだけを置く。
 
 ### 6. platform 別コード
 
