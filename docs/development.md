@@ -107,6 +107,32 @@ Web 版（Playwright の E2E）には影響しない。
 
 **完了を報告する前に、`lint`・`typecheck`・`test` をすべて通す。**
 
+## app.json の既定
+
+`app.json` に、次の既定を入れている。アプリごとに変えてよいものと、アプリごとに決めるものを分ける。
+
+| 項目 | 既定 | 補足 |
+| --- | --- | --- |
+| `name` / `slug` / `scheme` | プレースホルダ | 新しいアプリ名に置き換える。`scheme` はディープリンク用で、小文字で始める。ビルド時の設定なので Expo Go では効かない |
+| `version` | `"1.0.0"` | 公開バージョン |
+| `orientation` | `"portrait"` | 縦固定。ロックしないなら `"default"` |
+| `userInterfaceStyle` | `"automatic"` | 端末のライト / ダークに従う。Android では `expo-system-ui` が要る。`theme.ts` で両方に対応する。未指定だと `light` 固定になる |
+| `web.output` | `"single"` | SPA（既定）。動的ルートがそのまま動く。ルートごとの HTML が要る（SEO が必要な）アプリは `"static"` にする。その場合、動的ルートには `generateStaticParams` が要る |
+| `experiments.typedRoutes` | `true` | 型付きの `href`（[フォルダ構成](./folder-structure.md#1-srcapp-は-route-専用)） |
+| `experiments.reactCompiler` | `true` | 自動でメモ化される。`useCallback`・`useMemo`・`React.memo` は書かない（[画面の書き方](./screens.md#メモ化)） |
+| `plugins` | `["expo-router"]` | 権限の説明文などが要るプラグインは、使うアプリが足す |
+
+アプリごとに決めるもの（既定では入れない）。
+
+* `ios.bundleIdentifier` / `android.package`: ストアで一意の ID。最初の EAS ビルドの前に決める。
+* `ios.config.usesNonExemptEncryption`: 暗号化の輸出規制の回答。アプリの実態に合わせて決める。
+* EAS Update（`runtimeVersion`・`updates`）: 必要なアプリが足す。
+* アイコン、スプラッシュ画面: 画像を用意したアプリが足す。
+
+`newArchEnabled` は設定せず、SDK の既定に任せる。`app.config.ts` は、環境ごとに動的な値が要るときだけ使う（静的な `app.json` を既定とする）。
+
+React Compiler は、SDK 54 以降は Babel が自動設定される。SDK 55 以降は、lint のルールも `eslint-config-expo` に入っている。`babel.config.js` を変えたら、`npx expo start --clear` で Metro を再起動する。
+
 ## ビルドと配布（EAS）
 
 `eas.json` に、ビルドの種類（プロファイル）を 3 つ定義している。

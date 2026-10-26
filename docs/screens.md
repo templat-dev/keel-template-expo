@@ -80,3 +80,10 @@ const { control, handleSubmit, formState } = useForm<ItemFormValues>({
   onPress={handleSubmit(onSubmit)}
 />
 ```
+
+## メモ化
+
+`experiments.reactCompiler` を有効にしているため（[開発環境と設定](./development.md#appjson-の既定)）、**`useCallback`・`useMemo`・`React.memo` は書かない。** React Compiler が自動でメモ化する。
+
+* 対象は関数コンポーネントのアプリのコード。クラスコンポーネントは最適化されない。
+* 最適化を外したいコンポーネントやファイルには、`'use no memo'` ディレクティブを書く。

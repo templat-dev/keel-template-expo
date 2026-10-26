@@ -6,9 +6,9 @@ Expo アプリの共通ベース。「この構成でアプリを作って」と
 
 * [フォルダ構成](./docs/folder-structure.md): どこに置くか（route、feature、共通フォルダ、platform 別コード、style と test）
 * [選定ライブラリ](./docs/tech-stack.md): 何を使うか、なぜか、どう使うか（TanStack Query、Orval）
-* [開発環境と設定](./docs/development.md): 環境変数、開発ビルドと Expo Go、Lint・Format・型、ビルドと配布（EAS）
+* [開発環境と設定](./docs/development.md): 環境変数、開発ビルドと Expo Go、Lint・Format・型、`app.json` の既定、ビルドと配布（EAS）
 * [テスト](./docs/testing.md): 何をどのテストで確かめるか（Vitest、Playwright）
-* [画面の書き方](./docs/screens.md): データ取得を伴う画面の 4 状態、フォーム
+* [画面の書き方](./docs/screens.md): データ取得を伴う画面の 4 状態、フォーム、メモ化
 * [認証](./docs/auth.md): トークンの保存と扱い（`expo-secure-store`、Web は Cookie）
 
 **同じ事実は 1 か所にだけ書く。** 置き場はフォルダ構成、ライブラリの採用理由と使い方は選定ライブラリ、設定と動かし方は開発環境と設定、テストの方針はテスト、画面の書き方は画面の書き方、トークンの保存は認証が持つ。
@@ -19,6 +19,7 @@ Expo アプリの共通ベース。「この構成でアプリを作って」と
 * feature 同士は直接 import しない。別の feature のものが必要になったら、共通フォルダへ昇格させてから使う
 * 2 つ目の feature で必要になるまでは、先回りして共通化しない
 * データを取得する画面は、Loading・Error・Empty・Data の 4 状態を必ず扱う
+* `useCallback`・`useMemo`・`React.memo` は書かない（React Compiler が自動でメモ化する）
 * `src/api/generated/` は生成物。手で編集しない
 * 日常の開発は開発ビルドで行う。Expo Go で動くことを前提にコードを書かない
 * `EXPO_PUBLIC_` の値はバンドルに埋め込まれ、利用者から見える。秘密鍵・トークンは入れない
