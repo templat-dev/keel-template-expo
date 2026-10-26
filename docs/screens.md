@@ -122,7 +122,7 @@ const { control, handleSubmit, formState } = useForm<ItemFormValues>({
 | 非常に多く、`FlatList` で滑らかに動かない | `@shopify/flash-list` を検討する |
 
 * 迷ったら `FlatList` を選ぶ。件数が少ないうちは差が出ないが、増えたときに書き換えずに済む。
-* ほかの要素（ヘッダーなど）の中に `FlatList` を入れ子にしない。縦の `ScrollView` の中に縦の `FlatList` を置くと、仮想化が効かなくなる。ヘッダーは `ListHeaderComponent` に渡す。
+* 縦の `ScrollView` の中に、縦の `FlatList` を置かない（仮想化が効かなくなる）。一覧の上に固定の部分（ヘッダーなど）があるときは、`View` に並べるか、スクロールさせたいなら `FlatList` の `ListHeaderComponent` に渡す。
 
 ## メモ化
 
