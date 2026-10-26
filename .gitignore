@@ -15,6 +15,10 @@ expo-env.d.ts
 *.mobileprovision
 *.orig.*
 
+# テストの成果物
+test-results/
+playwright-report/
+
 # 環境変数（端末固有の値。.env.example をコピーして作る）
 .env*.local
 
