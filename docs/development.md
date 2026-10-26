@@ -27,6 +27,19 @@ Expo アプリの開発環境と設定のルール。置き場は[フォルダ�
 * **`EXPO_PUBLIC_` の値はバンドルに埋め込まれ、利用者から平文で見える。** 秘密鍵・トークンは入れない。秘密が要る処理はバックエンドに置く。
 * 参照は `process.env.EXPO_PUBLIC_XXX` とドット記法で静的に書く。ブラケット記法（`process.env["XXX"]`）や分割代入は埋め込まれず、動かない。
 * 値は `src/constants.ts` の 1 か所で読み、他の場所はそこから使う。
+* シェルで渡した環境変数（`EXPO_PUBLIC_XXX=… npx expo start`）より、`.env.local` の値が優先される（SDK 58 のバンドルで確認）。環境変数を上書きして起動したいときは、`.env.local` を使う。
+* **未設定なら起動時に例外を出す。** 未設定のままだと、接続先が空になり、相対 URL で自分の開発サーバーに `fetch` してしまい、原因の分かりにくいエラーになる。
+
+```ts
+// src/constants.ts
+export const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? ''
+
+if (!API_BASE_URL) {
+  throw new Error(
+    'EXPO_PUBLIC_API_BASE_URL が未設定です。.env.example を .env.local にコピーしてください。'
+  )
+}
+```
 
 ### 実機から接続するとき
 
@@ -89,7 +102,7 @@ Web 版（Playwright の E2E）には影響しない。
 ### 型
 
 * TypeScript は strict。`tsconfig.json` は `expo/tsconfig.base` を継承し、`@/*` を `./src/*` に解決する。
-* 型の検査は `npm run typecheck`（`tsc --noEmit`）。
+* 型の検査は `npm run typecheck`。`expo customize tsconfig.json` で typed routes の型（`.expo/types/router.d.ts`）を生成してから、`tsc --noEmit` を実行する。型は開発サーバー（`expo start`）の起動時にも生成されるが、`customize` なら開発サーバーが要らない（CI でも使える）。型が生成されていないと、typed routes の検査が効かない可能性がある。
 
 ### スクリプト
 
@@ -100,7 +113,7 @@ Web 版（Playwright の E2E）には影響しない。
 | `start` / `ios` / `android` / `web` | 開発サーバーの起動 |
 | `lint` | `expo lint` |
 | `format` | `prettier --write .` |
-| `typecheck` | `tsc --noEmit` |
+| `typecheck` | `expo customize tsconfig.json && tsc --noEmit` |
 | `test` / `test:watch` | Vitest（[テスト](./testing.md)） |
 | `e2e` | Playwright（[テスト](./testing.md)） |
 | `generate` | `orval`（API クライアントの生成） |
@@ -113,6 +126,13 @@ Web 版（Playwright の E2E）には影響しない。
 * パッケージマネージャーは npm。Expo の公式ドキュメントと既知の不具合の情報が、npm を前提にしているため。`package-lock.json` はコミットする。
 * Node は `package.json` の `engines` で宣言する: `"engines": { "node": "^24.3.0" }`。Node 24 は LTS で、`react-native` の要求（24 系なら 24.3.0 以上）に合う。`engines` は宣言なので、バージョンの切り替えは各自のツールで行う。
 * Expo SDK の更新は、1 回に 1 つずつ上げる。手順は公式のアップグレードガイドに従う。更新後は開発ビルドを作り直す。
+
+### インストール時の警告
+
+`npm install` のたびに、次の警告が出る。失敗ではない。
+
+* `N high severity vulnerabilities`: Expo 自身の内部の依存（`expo` → `@expo/cli` → `node-forge` と、古い `zod`）の報告。アプリのコードを通らない開発ツール側の依存。`npm audit fix --force` は `expo` を古い版に**下げる**ので使わない。Expo の更新を待つ。
+* `install-scripts`（npm 11）: postinstall を持つパッケージ（`esbuild`、`unrs-resolver` など）は、承認されるまで実行されない。Vitest や ESLint は承認なしで動く。必要なら `npm install-scripts approve <パッケージ>` で承認する。
 
 ## app.json の既定
 

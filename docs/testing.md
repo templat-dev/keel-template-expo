@@ -24,12 +24,31 @@ Expo アプリのテスト方針。置き場は[フォルダ構成](./folder-str
 ## E2E テスト（Playwright）
 
 * 単一コードベース（Expo Router + react-native-web）なので、UI のロジックの大半は Web 版でも同じものが動く。E2E は Web を主軸にする。
-* Playwright の `webServer` で Expo の Web 開発サーバーを起動してから実行する。ローカルでは起動済みのサーバーを再利用する。
+* Playwright の `webServer` で Expo の Web 開発サーバーを起動してから実行する。**開発用（`npm run web`、8081）とは別のポートで起動し、起動済みのサーバーは再利用しない**（`reuseExistingServer: false`）。再利用すると、接続先が実 API の開発サーバーに当たり、API の差し替えが効かず失敗する。
 * 画面の要素は `testID` で指定する。react-native-web は `testID` を `data-testid` として出力するので、`getByTestId` がそのまま使える。ロールや表示文言で取れる要素は、それを優先してよい。
 * 業務上意味のある単位で切る（利用者が達成すること、守られるべき制約）。1 画面を 1 つずつなぞるテストは書かない。
 * 正常系だけでなく、失敗や不正な入力の流れも含める。
 * API のレスポンスは、Playwright の `page.route` で差し替えられる。実物のバックエンドに当てるか、差し替えるかは、バックエンドの有無に合わせてアプリが決める。
 * スクリプトは `e2e`。設定は `playwright.config.ts`。
+
+### 初回の準備
+
+初回（と Playwright を更新したあと）に、ブラウザを入れる: `npx playwright install chromium`（約 300MB）。Playwright は、バージョンごとに対応するブラウザの版が決まっている。入っていないと、全件が `Executable doesn't exist at …` で失敗する。
+
+### API の差し替え
+
+実 API に届かせず、`page.route` で応答する。
+
+* **接続先のホストに依存しない。** `.env.local` があると、その値が `webServer.env` で渡した接続先より優先される（SDK 58 で確認。開発サーバーの `EXPO_PUBLIC_*` は、シェルの環境変数より `.env.local` が勝つ）。そのため、「アプリ自身（`localhost`）以外へ出る、API のパスへのリクエスト」を判定する関数を `page.route` に渡して差し替える。ホストを決め打ちにすると、`.env.local` がある環境で全件が失敗する。
+* `webServer.env` の接続先（例: `http://api.test`）は、`.env.local` が無い環境（CI など）で、実 API に届かないようにするために置く。
+* アプリ（`localhost`）と API は別オリジンなので、CORS のプリフライト（`OPTIONS`）にも 204 とヘッダー（`access-control-allow-origin` など）で応答する。
+
+### 失敗の流れ
+
+TanStack Query は、失敗すると既定で 3 回まで自動で再試行する（1・2・4 秒待つ）。エラー表示までに約 7 秒かかり、1 回だけ失敗させるモックでは、エラー表示が一度も出ない。
+
+* 失敗させ続けて、エラー表示を長めに待つ（15 秒）。
+* 復旧させてから「再試行」を押す。
 * 実行の成果物（`test-results/`、`playwright-report/`）は `.gitignore` に入れる。
 
 ### E2E で確かめられないこと

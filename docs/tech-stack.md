@@ -51,6 +51,33 @@
 * 生成物は `src/api/generated/` に置く。**手で編集しない。** 型が合わないときは OpenAPI 契約を直して再生成する。
 * 設定ファイル（`orval.config.ts`）は `src/` の外（リポジトリ直下）に置く。
 
+### 設定
+
+```ts
+// orval.config.ts
+import { defineConfig } from 'orval'
+
+export default defineConfig({
+  api: {
+    input: './src/api/openapi.yaml',
+    output: {
+      target: './src/api/generated/index.ts',
+      schemas: './src/api/generated/model',
+      client: 'react-query',
+      httpClient: 'fetch',
+      override: {
+        fetch: { includeHttpResponseReturnType: false },
+        mutator: { path: './src/api/mutator.ts', name: 'customFetch' }
+      }
+    }
+  }
+})
+```
+
+* `includeHttpResponseReturnType: false` は必須。既定では、生成された関数が `{ data, status, headers }` を返すため、画面で `data.data` と書くことになる。`false` にすると本文だけが返る。引き換えに、ステータスやヘッダーを画面で使えなくなる（必要なアプリは `true` に戻し、mutator も `{ data, status, headers }` を返す形にする）。
+* mutator は JSON をそのまま返す。失敗（`!response.ok`）は `ApiError` を投げる。
+* Orval の公式ドキュメントの例は axios 前提で古い。設定は、生成して出力を確かめながら決める。
+
 ### エラーの型
 
 * 生成された hook のエラーの型は、既定では `unknown` になる。このままだと `error.message` が型エラーになり、`if (error)` で `data` の型も絞り込めない。
@@ -114,6 +141,8 @@ export function useCreateItem() {
 ```
 
 `useGetItem`・`usePostItems` などの名前は、OpenAPI の `operationId` から決まる例。
+
+包む hook は、生成された hook と同じ名前にできない（`createPost` から `useCreatePost` が生成されるため）。名前は「`<生成された hook の名前>And<やること>`」にする（例: `useCreatePostAndRefresh`。ファイルは `use-create-post-and-refresh.ts`）。
 
 ### 無効化を 1 か所にまとめる選択肢
 

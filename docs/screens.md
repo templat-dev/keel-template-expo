@@ -31,6 +31,31 @@ export function ItemList() {
 
 * `error.message` が使えるのは、mutator が `ErrorType` を export してエラーの型を上書きしているため（[選定ライブラリ](./tech-stack.md#エラーの型)）。上書きしないと、エラーの型が `unknown` になり、型エラーになる。
 
+### 画面の一部だけが状態に依存するとき
+
+一覧の挨拶やフィルタのように、常に出したい部分があるときは、画面全体を早期 return で置き換えられない（ヘッダーとフィルタが消える）。**状態に依存する部分を別のコンポーネントに分け**、そこで早期 return する。親の画面は、hook を呼んで固定部分を描く。
+
+```tsx
+export function PostList() {
+  const { data, isPending, error, refetch } = useListPosts()
+  return (
+    <View>
+      <PostListHeader />
+      <PostListBody data={data} isPending={isPending} error={error} onRetry={refetch} />
+    </View>
+  )
+}
+
+function PostListBody({ data, isPending, error, onRetry }: Props) {
+  if (isPending) return <Loading />
+  if (error) return <ErrorView message={error.message} onRetry={onRetry} />
+  if (!data || data.length === 0) return <EmptyView message='投稿がありません' />
+  return <FlatList data={data} … />
+}
+```
+
+* `data` の型は、生成された型（`Post[]`）を使う。手で書き直さない。
+
 ### 共通コンポーネント
 
 `src/components/` に、1 ファイル 1 コンポーネントで置く。
