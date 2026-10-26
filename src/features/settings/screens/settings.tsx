@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet } from 'react-native'
+import { ScrollView } from 'react-native'
 
 import { TextField } from '@/components/text-field'
 import { useDisplayName } from '@/hooks/use-display-name'
@@ -6,7 +6,7 @@ import { useDisplayName } from '@/hooks/use-display-name'
 export function Settings() {
   const [displayName, setDisplayName] = useDisplayName()
   return (
-    <ScrollView contentContainerStyle={styles.content}>
+    <ScrollView contentContainerClassName='p-4'>
       <TextField
         label='表示名'
         testID='display-name'
@@ -16,7 +16,3 @@ export function Settings() {
     </ScrollView>
   )
 }
-
-const styles = StyleSheet.create({
-  content: { padding: 16 }
-})

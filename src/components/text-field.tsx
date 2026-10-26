@@ -1,6 +1,4 @@
-import { StyleSheet, Text, TextInput, View } from 'react-native'
-
-import { useTheme } from '@/hooks/use-theme'
+import { Text, TextInput, View } from 'react-native'
 
 export function TextField({
   label,
@@ -19,10 +17,9 @@ export function TextField({
   multiline?: boolean
   testID?: string
 }) {
-  const colors = useTheme()
   return (
-    <View style={styles.container}>
-      <Text style={{ color: colors.text }}>{label}</Text>
+    <View className='gap-1'>
+      <Text className='text-neutral-900 dark:text-neutral-100'>{label}</Text>
       <TextInput
         accessibilityLabel={label}
         testID={testID}
@@ -30,22 +27,17 @@ export function TextField({
         onChangeText={onChangeText}
         onBlur={onBlur}
         multiline={multiline}
-        style={[
-          styles.input,
-          multiline ? styles.multiline : null,
-          {
-            borderColor: error ? colors.danger : colors.border,
-            color: colors.text
-          }
-        ]}
+        // 複数行は上から書き始める（className では指定できない）
+        style={multiline ? { textAlignVertical: 'top' } : undefined}
+        className={`rounded-lg border p-2.5 text-neutral-900 dark:text-neutral-100 ${
+          error
+            ? 'border-red-600'
+            : 'border-neutral-300 dark:border-neutral-700'
+        } ${multiline ? 'min-h-[120px]' : ''}`}
       />
-      {error ? <Text style={{ color: colors.danger }}>{error}</Text> : null}
+      {error ? (
+        <Text className='text-red-600 dark:text-red-400'>{error}</Text>
+      ) : null}
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: { gap: 4 },
-  input: { borderWidth: 1, borderRadius: 8, padding: 10 },
-  multiline: { minHeight: 120, textAlignVertical: 'top' }
-})

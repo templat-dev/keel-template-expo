@@ -1,5 +1,10 @@
+import '../global.css'
+
 import { QueryClientProvider } from '@tanstack/react-query'
-import { Stack } from 'expo-router'
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router'
+import { useColorScheme as useNativeWindColorScheme } from 'nativewind'
+import { useEffect } from 'react'
+import { Platform, useColorScheme } from 'react-native'
 
 import { queryClient } from '@/api/query-client'
 
@@ -7,13 +12,29 @@ import { queryClient } from '@/api/query-client'
 export const unstable_settings = { anchor: '(tabs)' }
 
 export default function RootLayout() {
+  const colorScheme = useColorScheme()
+  const { setColorScheme } = useNativeWindColorScheme()
+
+  // darkMode: 'class' では、dark: のクラスが端末の設定に自動では従わない。端末の設定を NativeWind に渡す。
+  // Web は、開発サーバーでは NativeWind が class を付けるのが間に合わないので、自分で付ける。
+  useEffect(() => {
+    const scheme = colorScheme === 'dark' ? 'dark' : 'light'
+    setColorScheme(scheme)
+    if (Platform.OS === 'web') {
+      document.documentElement.classList.toggle('dark', scheme === 'dark')
+    }
+  }, [colorScheme, setColorScheme])
+
   return (
     <QueryClientProvider client={queryClient}>
-      <Stack>
-        <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
-        <Stack.Screen name='posts/[id]' options={{ title: '投稿の詳細' }} />
-        <Stack.Screen name='posts/new' options={{ title: '投稿の作成' }} />
-      </Stack>
+      {/* ヘッダーやタブバー、画面の背景を、端末のライト / ダークに合わせる */}
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Stack>
+          <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
+          <Stack.Screen name='posts/[id]' options={{ title: '投稿の詳細' }} />
+          <Stack.Screen name='posts/new' options={{ title: '投稿の作成' }} />
+        </Stack>
+      </ThemeProvider>
     </QueryClientProvider>
   )
 }

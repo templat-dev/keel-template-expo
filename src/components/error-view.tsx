@@ -1,6 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native'
-
-import { useTheme } from '@/hooks/use-theme'
+import { Pressable, Text, View } from 'react-native'
 
 export function ErrorView({
   message,
@@ -9,30 +7,18 @@ export function ErrorView({
   message: string
   onRetry?: () => void
 }) {
-  const colors = useTheme()
   return (
-    <View style={styles.container}>
-      <Text style={{ color: colors.danger }}>{message}</Text>
+    <View className='flex-1 items-center justify-center gap-3 p-4'>
+      <Text className='text-red-600 dark:text-red-400'>{message}</Text>
       {onRetry ? (
         <Pressable
           accessibilityRole='button'
           onPress={onRetry}
-          style={[styles.button, { backgroundColor: colors.primary }]}
+          className='rounded-lg bg-sky-700 px-4 py-2 dark:bg-sky-400'
         >
-          <Text style={{ color: colors.onPrimary }}>再試行</Text>
+          <Text className='text-white dark:text-neutral-900'>再試行</Text>
         </Pressable>
       ) : null}
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 12,
-    padding: 16
-  },
-  button: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8 }
-})

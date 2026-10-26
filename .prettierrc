@@ -3,3 +3,6 @@ semi: false
 singleQuote: true
 jsxSingleQuote: true
 trailingComma: none
+# className の並びを Tailwind 公式の順に整える
+plugins:
+  - prettier-plugin-tailwindcss

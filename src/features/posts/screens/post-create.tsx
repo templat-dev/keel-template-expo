@@ -1,10 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'expo-router'
 import { Controller, useForm } from 'react-hook-form'
-import { Pressable, ScrollView, StyleSheet, Text } from 'react-native'
+import { Pressable, ScrollView, Text } from 'react-native'
 
 import { TextField } from '@/components/text-field'
-import { useTheme } from '@/hooks/use-theme'
 
 import { useCreatePostAndRefresh } from '../hooks/use-create-post-and-refresh'
 import {
@@ -17,7 +16,6 @@ import {
 const SAMPLE_USER_ID = 1
 
 export function PostCreate() {
-  const colors = useTheme()
   const router = useRouter()
   const { mutateAsync, error } = useCreatePostAndRefresh()
   const { control, handleSubmit, formState } = useForm<PostFormValues>({
@@ -31,7 +29,7 @@ export function PostCreate() {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.content}>
+    <ScrollView contentContainerClassName='gap-4 p-4'>
       <Controller
         control={control}
         name='title'
@@ -62,26 +60,20 @@ export function PostCreate() {
         )}
       />
       {error ? (
-        <Text style={{ color: colors.danger }}>投稿に失敗しました</Text>
+        <Text className='text-red-600 dark:text-red-400'>
+          投稿に失敗しました
+        </Text>
       ) : null}
       <Pressable
         accessibilityRole='button'
         disabled={formState.isSubmitting}
         onPress={() => handleSubmit(onSubmit)()}
-        style={[
-          styles.button,
-          { backgroundColor: colors.primary },
-          formState.isSubmitting ? styles.disabled : null
-        ]}
+        className={`items-center rounded-lg bg-sky-700 p-3 dark:bg-sky-400 ${
+          formState.isSubmitting ? 'opacity-50' : ''
+        }`}
       >
-        <Text style={{ color: colors.onPrimary }}>登録</Text>
+        <Text className='text-white dark:text-neutral-900'>登録</Text>
       </Pressable>
     </ScrollView>
   )
 }
-
-const styles = StyleSheet.create({
-  content: { padding: 16, gap: 16 },
-  button: { alignItems: 'center', padding: 12, borderRadius: 8 },
-  disabled: { opacity: 0.5 }
-})
