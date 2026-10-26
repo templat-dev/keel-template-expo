@@ -14,6 +14,7 @@
 | 通信                   | 標準の `fetch`        | Orval の mutator に認証ヘッダと 401 処理を集約する                                           |
 | トークンの保存         | `expo-secure-store`   | ネイティブのみ。Web は `httpOnly` Cookie。方針は[認証](./auth.md)                            |
 | スタイル               | `StyleSheet`（標準）  | アプリごとに変えてよい                                                                       |
+| アイコン | `@expo/vector-icons`（Ionicons） | Expo 標準。ほかのアイコンに切り替えたいアプリは、自分で切り替える。使い方は下の「アイコン」 |
 | 単体テスト             | Vitest（node 環境）   | 純粋なロジックだけが対象。方針は[テスト](./testing.md)                                       |
 | E2E テスト             | Playwright            | Web 版（react-native-web）が対象。方針は[テスト](./testing.md)                               |
 | Lint                   | ESLint + `eslint-config-expo` | flat config。方針は[開発環境と設定](./development.md#lintformat型) |
@@ -21,6 +22,27 @@
 | 型                     | TypeScript（strict） | `expo/tsconfig.base` を継承する                                                              |
 
 ここに無い領域（アニメーション、国際化など）は未決。アプリごとに選び、そのアプリの `CLAUDE.md` に書く。
+
+## アイコン（@expo/vector-icons）
+
+* `@expo/vector-icons` は、`npx expo install @expo/vector-icons expo-font` で入れる（`expo-font` は peer 依存。`app.json` の `plugins` に `expo-font` が自動で足される）。
+* タブのアイコンの例:
+
+```tsx
+import Ionicons from '@expo/vector-icons/Ionicons'
+
+<Tabs.Screen
+  name='index'
+  options={{
+    title: 'ホーム',
+    tabBarIcon: ({ color, size }) => (
+      <Ionicons name='home-outline' color={color as string} size={size} />
+    )
+  }}
+/>
+```
+
+* `tabBarIcon` の `color` は `ColorValue`（数値や null を含む）で、Ionicons の `color`（`string`）と型が合わない。実際に渡るのは文字列なので、`as string` で渡す。
 
 ## クライアント状態（Jotai）
 
