@@ -1,4 +1,7 @@
-# 依存
+# Expo 公式テンプレート（expo-template-default@sdk-58）の .gitignore をもとにしている。
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# dependencies
 node_modules/
 
 # Expo
@@ -7,28 +10,40 @@ dist/
 web-build/
 expo-env.d.ts
 
-# ネイティブのビルド成果物・署名鍵
+# Native
+.kotlin/
+*.orig.*
 *.jks
 *.p8
 *.p12
 *.key
 *.mobileprovision
-*.orig.*
 
-# テストの成果物
-test-results/
-playwright-report/
+# Metro
+.metro-health-check*
 
-# 環境変数（端末固有の値。.env.example をコピーして作る）
-.env*.local
-
-# ログ
+# debug
 npm-debug.*
 yarn-debug.*
 yarn-error.*
 
-# IDE
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+# generated native folders
+/ios
+/android
+
+# IDE（JetBrains）
 .idea/
 
-# OS
-.DS_Store
+# テストの成果物（Playwright）
+test-results/
+playwright-report/
