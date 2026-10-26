@@ -95,6 +95,7 @@ Web 版（Playwright の E2E）には影響しない。
   * `trailingComma: none`（末尾のカンマなし。Prettier 3 の既定は `all`）
 * Expo の公式ガイドは、Prettier の設定の例を示していない。上の準拠は、このテンプレートの選択。
 * 生成物は整形しない（`.prettierignore`）。整形すると、生成のたびに全行が書き換わる。
+* Markdown（`*.md`）も整形しない（`.prettierignore`）。Prettier は箇条書きを `*` から `-` に書き換え、`*` に保つ設定がない。Markdown も Prettier で整えたいアプリは、`.prettierignore` から `*.md` を外す。
 * 整形は `npm run format`（`prettier --write .`）で行う。
 
 インストールは `npx expo install prettier eslint-config-prettier eslint-plugin-prettier --dev`。
