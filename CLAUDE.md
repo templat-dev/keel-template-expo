@@ -4,13 +4,13 @@ Expo アプリの共通ベース。「この構成でアプリを作って」と
 
 ## 資料
 
-* [フォルダ構成](./docs/folder-structure.md): どこに置くか（route、feature、共通フォルダ、platform 別コード、style と test）
-* [選定ライブラリ](./docs/tech-stack.md): 何を使うか、なぜか、どう使うか（TanStack Query、Orval）
-* [開発環境と設定](./docs/development.md): 環境変数、開発ビルドと Expo Go、Lint・Format・型、`app.json` の既定、ビルドと配布（EAS）
-* [テスト](./docs/testing.md): 何をどのテストで確かめるか（Vitest、Playwright）
-* [画面の書き方](./docs/screens.md): データ取得を伴う画面の 4 状態、フォーム、メモ化
-* [認証](./docs/auth.md): トークンの保存と扱い（`expo-secure-store`、Web は Cookie）
-* [AI との進め方](./docs/workflow.md)（任意）: 依存の追加、完了の報告、公式ドキュメントの確認
+* [フォルダ構成](./docs/フォルダ構成.md): どこに置くか（route、feature、共通フォルダ、platform 別コード、style と test）
+* [選定ライブラリ](./docs/選定ライブラリ.md): 何を使うか、なぜか、どう使うか（TanStack Query、Orval）
+* [開発環境と設定](./docs/開発環境と設定.md): 環境変数、開発ビルドと Expo Go、Lint・Format・型、`app.json` の既定、ビルドと配布（EAS）
+* [テスト](./docs/テスト.md): 何をどのテストで確かめるか（Vitest、Playwright）
+* [画面の書き方](./docs/画面の書き方.md): データ取得を伴う画面の 4 状態、フォーム、メモ化
+* [認証](./docs/認証.md): トークンの保存と扱い（`expo-secure-store`、Web は Cookie）
+* [AIとの進め方](./docs/AIとの進め方.md)（任意）: 依存の追加、完了の報告、公式ドキュメントの確認
 
 **同じ事実は 1 か所にだけ書く。** 置き場はフォルダ構成、ライブラリの採用理由と使い方は選定ライブラリ、設定と動かし方は開発環境と設定、テストの方針はテスト、画面の書き方は画面の書き方、トークンの保存は認証が持つ。
 
