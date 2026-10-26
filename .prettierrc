@@ -1,0 +1,5 @@
+# Standard Style 準拠（prettier-config-standard と同じ値。既定値と違う 4 項目だけを書く）
+semi: false
+singleQuote: true
+jsxSingleQuote: true
+trailingComma: none
