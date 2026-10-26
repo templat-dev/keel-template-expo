@@ -127,7 +127,7 @@ Web 版（Playwright の E2E）には影響しない。
 | `web.output` | `"single"` | SPA（既定）。動的ルートがそのまま動く。ルートごとの HTML が要る（SEO が必要な）アプリは `"static"` にする。その場合、動的ルートには `generateStaticParams` が要る |
 | `experiments.typedRoutes` | `true` | 型付きの `href`（[フォルダ構成](./folder-structure.md#1-srcapp-は-route-専用)） |
 | `experiments.reactCompiler` | `true` | 自動でメモ化される。`useCallback`・`useMemo`・`React.memo` は書かない（[画面の書き方](./screens.md#メモ化)） |
-| `plugins` | `["expo-router"]` | 権限の説明文などが要るプラグインは、使うアプリが足す |
+| `plugins` | `["expo-router", "expo-status-bar"]` | プラグインは `npx expo install` がパッケージを入れるときに自動で足す（手で足さない）。権限の説明文などが要るものは、使うアプリが足す |
 
 アプリごとに決めるもの（既定では入れない）。
 

@@ -30,6 +30,7 @@ Expo アプリのテスト方針。置き場は[フォルダ構成](./folder-str
 * 正常系だけでなく、失敗や不正な入力の流れも含める。
 * API のレスポンスは、Playwright の `page.route` で差し替えられる。実物のバックエンドに当てるか、差し替えるかは、バックエンドの有無に合わせてアプリが決める。
 * スクリプトは `e2e`。設定は `playwright.config.ts`。
+* 実行の成果物（`test-results/`、`playwright-report/`）は `.gitignore` に入れる。
 
 ### E2E で確かめられないこと
 

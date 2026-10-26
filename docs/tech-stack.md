@@ -39,7 +39,7 @@
 
 * RHF は React Native でも使える。入力は `Controller` でラップし、`field` の `onChange` / `onBlur` / `value` を `TextInput` の `onChangeText` / `onBlur` / `value` に接続する。
 * 検証のスキーマは Zod で定義し、`@hookform/resolvers` の `zodResolver` を `useForm` の `resolver` に渡す。型は `z.infer` で取る。
-* Zod v4 を使うときは、`@hookform/resolvers` を 3.10 以上にし、`tsconfig.json` の `moduleResolution` を `"bundler"`・`"node16"`・`"nodenext"` のいずれかにする（合わないと `Cannot find module '@hookform/resolvers/zod'` になる）。
+* `@hookform/resolvers` は 5 系を使う（`npm install @hookform/resolvers@5`。サンプルは 5.9.2）。最新の 6.0.0 は、optional な peer 依存の `effect` が競合して、`npm install` が ERESOLVE で止まる（2026 年 10 月時点）。Zod v4 を使うときは、3.10 以上が必要で、`tsconfig.json` の `moduleResolution` を `"bundler"`・`"node16"`・`"nodenext"` のいずれかにする（合わないと `Cannot find module '@hookform/resolvers/zod'` になる）。
 * Orval の Zod 生成（`client: 'zod'`）は、テンプレートでは使わない。フォームの項目は API のリクエスト本文と一致しないことが多く、フォーム専用のスキーマのほうが素直なため。一致するアプリが、必要なら足す。
 
 ## API クライアントの生成（Orval）
@@ -50,6 +50,26 @@
 * 通信ライブラリではない。通信は標準の `fetch` で行い、認証ヘッダと 401 処理は mutator（`src/api/mutator.ts`）に集約する。
 * 生成物は `src/api/generated/` に置く。**手で編集しない。** 型が合わないときは OpenAPI 契約を直して再生成する。
 * 設定ファイル（`orval.config.ts`）は `src/` の外（リポジトリ直下）に置く。
+
+### エラーの型
+
+* 生成された hook のエラーの型は、既定では `unknown` になる。このままだと `error.message` が型エラーになり、`if (error)` で `data` の型も絞り込めない。
+* mutator に `ErrorType` を export して、エラーの型を上書きする。`npm run generate` で再生成すると、生成された hook のエラーの型が `ErrorType<unknown>` になり、`error.message` が使え、`data` も絞り込まれる。
+
+```ts
+// src/api/mutator.ts
+export class ApiError<Body = unknown> extends Error {
+  constructor(
+    readonly status: number,
+    message: string,
+    readonly body?: Body
+  ) {
+    super(message)
+  }
+}
+
+export type ErrorType<Body> = ApiError<Body>
+```
 
 ### 採用理由
 

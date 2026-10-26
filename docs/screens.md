@@ -29,6 +29,8 @@ export function ItemList() {
 }
 ```
 
+* `error.message` が使えるのは、mutator が `ErrorType` を export してエラーの型を上書きしているため（[選定ライブラリ](./tech-stack.md#エラーの型)）。上書きしないと、エラーの型が `unknown` になり、型エラーになる。
+
 ### 共通コンポーネント
 
 `src/components/` に、1 ファイル 1 コンポーネントで置く。
@@ -46,6 +48,7 @@ export function ItemList() {
 * **スキーマは feature の `utils/` に置く。** 純粋なロジックなので、単体テストの対象になる。型は `z.infer` で取る。
 * 入力は `Controller` で `TextInput` に接続する。エラー表示つきの共通入力コンポーネント `text-field.tsx` を `src/components/` に置き、各フォームはそれを使う。
 * 送信中は二重送信を防ぐ。`formState.isSubmitting` を使い、送信ボタンを無効にする。
+* `Pressable` の `onPress` に `handleSubmit(onSubmit)` をそのまま渡すと、イベントの型が合わず型エラーになる。`() => handleSubmit(onSubmit)()` と関数で包む。
 
 ```tsx
 // src/features/items/utils/item-form.ts
@@ -74,11 +77,13 @@ const { control, handleSubmit, formState } = useForm<ItemFormValues>({
     />
   )}
 />
-<Button
-  title='登録'
+<Pressable
+  accessibilityRole='button'
   disabled={formState.isSubmitting}
-  onPress={handleSubmit(onSubmit)}
-/>
+  onPress={() => handleSubmit(onSubmit)()}
+>
+  <Text>登録</Text>
+</Pressable>
 ```
 
 ## メモ化
