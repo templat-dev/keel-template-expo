@@ -1,70 +1,86 @@
 import { ActivityIndicator, Modal, Pressable, Text, View } from 'react-native'
 
-// 確認・案内のモーダル。Alert.alert は Web で動かないので、自前で持つ。
-// 背景のタップでは閉じない（確認を読まずに閉じて進んでしまうのを避ける）。
+type DialogProps = {
+  visible: boolean
+  title: string
+  message?: string
+  confirmLabel: string
+  onConfirm: () => void
+  /** 渡すと「キャンセル」のボタンが出る。省略すると、確認ボタンだけの案内になる */
+  cancelLabel?: string
+  onCancel?: () => void
+  /** 取り消せない操作のとき、確認ボタンを警告の色にする */
+  destructive?: boolean
+  /** 確認の処理中。確認ボタンを押せなくして、二重に実行されないようにする */
+  busy?: boolean
+}
+
+// 確認と案内のダイアログ。Alert.alert は Web で何も起きないので、自前で用意する。
+// 目的は確認なので、枠の外をタップしても閉じない。Android の戻るボタンは、キャンセル（なければ確認）として扱う。
 export function Dialog({
   visible,
   title,
-  body,
-  actions,
-  onDismiss
-}: {
-  visible: boolean
-  title: string
-  body: string
-  /** `pending` は処理中。押せなくして、ラベルの前に処理中の表示を出す（二重実行を防ぐ） */
-  actions: {
-    label: string
-    onPress: () => void
-    destructive?: boolean
-    pending?: boolean
-  }[]
-  /** Android の戻るボタンで呼ばれる。通常は「キャンセル」と同じ処理を渡す */
-  onDismiss?: () => void
-}) {
+  message,
+  confirmLabel,
+  onConfirm,
+  cancelLabel,
+  onCancel,
+  destructive,
+  busy
+}: DialogProps) {
   return (
     <Modal
       visible={visible}
       transparent
       animationType='fade'
-      onRequestClose={onDismiss}
+      onRequestClose={onCancel ?? onConfirm}
     >
-      <View className='flex-1 items-center justify-center bg-black/40 p-6'>
+      <View className='flex-1 items-center justify-center bg-black/50 px-6'>
         <View
           accessibilityRole='alert'
-          className='w-full max-w-sm gap-3 rounded-xl bg-white p-5 dark:bg-neutral-800'
+          className='w-full max-w-sm gap-4 rounded-2xl bg-white p-6 dark:bg-neutral-800'
         >
-          <Text className='text-base font-bold text-neutral-900 dark:text-neutral-100'>
-            {title}
-          </Text>
-          <Text className='text-sm leading-6 text-neutral-600 dark:text-neutral-400'>
-            {body}
-          </Text>
-          <View className='mt-2 gap-2'>
-            {actions.map((action) => (
+          <View className='gap-2'>
+            <Text className='text-lg font-bold text-neutral-900 dark:text-neutral-100'>
+              {title}
+            </Text>
+            {message ? (
+              <Text className='text-neutral-600 dark:text-neutral-300'>
+                {message}
+              </Text>
+            ) : null}
+          </View>
+          <View className='flex-row justify-end gap-3'>
+            {cancelLabel ? (
               <Pressable
-                key={action.label}
                 accessibilityRole='button'
-                disabled={action.pending}
-                onPress={action.onPress}
-                className={`flex-row items-center justify-center gap-2 rounded-lg py-3 ${
-                  action.destructive && !action.pending
-                    ? 'bg-red-600'
-                    : 'border border-neutral-300 dark:border-neutral-600'
-                }`}
+                onPress={onCancel}
+                className='rounded-lg px-4 py-2'
               >
-                {action.pending ? <ActivityIndicator /> : null}
-                <Text
-                  className={`text-sm font-bold ${
-                    action.destructive && !action.pending
-                      ? 'text-white'
-                      : 'text-neutral-900 dark:text-neutral-100'
-                  }`}
-                >
-                  {action.label}
+                <Text className='font-bold text-neutral-700 dark:text-neutral-200'>
+                  {cancelLabel}
                 </Text>
               </Pressable>
-            ))}
+            ) : null}
+            <Pressable
+              accessibilityRole='button'
+              disabled={busy}
+              onPress={onConfirm}
+              className={`flex-row items-center gap-2 rounded-lg px-4 py-2 ${
+                destructive ? 'bg-red-600' : 'bg-sky-700 dark:bg-sky-400'
+              } ${busy ? 'opacity-50' : ''}`}
+            >
+              {busy ? <ActivityIndicator color='white' /> : null}
+              <Text
+                className={`font-bold ${
+                  destructive
+                    ? 'text-white'
+                    : 'text-white dark:text-neutral-900'
+                }`}
+              >
+                {confirmLabel}
+              </Text>
+            </Pressable>
           </View>
         </View>
       </View>

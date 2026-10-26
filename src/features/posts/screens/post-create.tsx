@@ -47,7 +47,11 @@ export function PostCreate() {
   }
 
   return (
-    <ScrollView contentContainerClassName='gap-4 p-4'>
+    <ScrollView
+      contentContainerClassName='gap-4 p-4'
+      automaticallyAdjustKeyboardInsets
+      keyboardShouldPersistTaps='handled'
+    >
       <Controller
         control={control}
         name='title'
@@ -95,12 +99,12 @@ export function PostCreate() {
       <Dialog
         visible={leave !== null}
         title='入力を破棄しますか？'
-        body='入力した内容は保存されません。'
-        onDismiss={() => setLeave(null)}
-        actions={[
-          { label: '入力を続ける', onPress: () => setLeave(null) },
-          { label: '破棄する', onPress: discard, destructive: true }
-        ]}
+        message='入力した内容は保存されません。'
+        confirmLabel='破棄する'
+        onConfirm={discard}
+        cancelLabel='入力を続ける'
+        onCancel={() => setLeave(null)}
+        destructive
       />
     </ScrollView>
   )

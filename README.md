@@ -17,7 +17,7 @@ Expo アプリの共通ベース。フォルダ構成・選定ライブラリ・
 ```bash
 nvm use 24                       # Node を 24 にする（nvm の場合）
 npm install
-cp .env.example .env.local       # 接続先の API を設定する（.env.local は git 管理外）
+cp .env.example .env.local       # 接続先の API を設定する（.env.local はコミットされない）
 npm run web                      # http://localhost:8081 をブラウザで開く
 ```
 
