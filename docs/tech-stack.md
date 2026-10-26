@@ -4,19 +4,20 @@
 
 ## 採用一覧
 
-| 領域                   | 採用                 | 備考                                                                                         |
-| ---------------------- | -------------------- | -------------------------------------------------------------------------------------------- |
-| ルーティング           | Expo Router          | ファイルベース。route の書き方は[フォルダ構成](./folder-structure.md#1-srcapp-は-route-専用) |
-| データ取得・キャッシュ | TanStack Query       |                                                                                              |
-| クライアント状態       | Jotai                | サーバー状態以外の状態。使い方は下の「クライアント状態（Jotai）」                            |
-| API クライアントの生成 | Orval                | OpenAPI 契約から、型・API 呼び出し関数・TanStack Query の hook を生成する                    |
-| 通信                   | 標準の `fetch`       | Orval の mutator に認証ヘッダと 401 処理を集約する                                           |
-| トークンの保存         | `expo-secure-store`  | ネイティブのみ。Web は `httpOnly` Cookie。方針は[認証](./auth.md)                            |
-| スタイル               | `StyleSheet`（標準） | アプリごとに変えてよい                                                                       |
-| 単体テスト             | Vitest（node 環境）  | 純粋なロジックだけが対象。方針は[テスト](./testing.md)                                       |
-| E2E テスト             | Playwright           | Web 版（react-native-web）が対象。方針は[テスト](./testing.md)                               |
+| 領域                   | 採用                  | 備考                                                                                         |
+| ---------------------- | --------------------- | -------------------------------------------------------------------------------------------- |
+| ルーティング           | Expo Router           | ファイルベース。route の書き方は[フォルダ構成](./folder-structure.md#1-srcapp-は-route-専用) |
+| データ取得・キャッシュ | TanStack Query        |                                                                                              |
+| クライアント状態       | Jotai                 | サーバー状態以外の状態。使い方は下の「クライアント状態（Jotai）」                            |
+| フォーム               | React Hook Form + Zod | 検証を伴う入力フォーム。使い方は下の「フォーム」と[画面の書き方](./screens.md#フォーム)      |
+| API クライアントの生成 | Orval                 | OpenAPI 契約から、型・API 呼び出し関数・TanStack Query の hook を生成する                    |
+| 通信                   | 標準の `fetch`        | Orval の mutator に認証ヘッダと 401 処理を集約する                                           |
+| トークンの保存         | `expo-secure-store`   | ネイティブのみ。Web は `httpOnly` Cookie。方針は[認証](./auth.md)                            |
+| スタイル               | `StyleSheet`（標準）  | アプリごとに変えてよい                                                                       |
+| 単体テスト             | Vitest（node 環境）   | 純粋なロジックだけが対象。方針は[テスト](./testing.md)                                       |
+| E2E テスト             | Playwright            | Web 版（react-native-web）が対象。方針は[テスト](./testing.md)                               |
 
-フォームなどは未決。アプリごとに選び、そのアプリの `CLAUDE.md` に書く。新しいライブラリの追加は、事前に提案する。
+ここに無い領域（アニメーション、国際化など）は未決。アプリごとに選び、そのアプリの `CLAUDE.md` に書く。新しいライブラリの追加は、事前に提案する。
 
 ## クライアント状態（Jotai）
 
@@ -28,6 +29,15 @@
 * React の外（mutator など）から読み書きするときは、`getDefaultStore()` で取った既定のストアに `get` / `set` する。たとえば、API が 401 を返したときに、mutator が認証状態の atom を未ログインへ戻せる。
 * 永続化は `atomWithStorage` を使う。React Native では `createJSONStorage` に AsyncStorage を渡す。AsyncStorage は非同期なので、atom の値は Promise になり、現在の値を見て更新するときは `await` が要る。
 * **認証トークンなど秘密の値は、`atomWithStorage`（AsyncStorage）に入れない。** 保存先の規約は[認証](./auth.md)が持つ。
+
+## フォーム（React Hook Form + Zod）
+
+検証を伴う入力フォームは、React Hook Form（RHF）と Zod で書く。検証のない単純な入力は、`useState` でよい。
+
+* RHF は React Native でも使える。入力は `Controller` でラップし、`field` の `onChange` / `onBlur` / `value` を `TextInput` の `onChangeText` / `onBlur` / `value` に接続する。
+* 検証のスキーマは Zod で定義し、`@hookform/resolvers` の `zodResolver` を `useForm` の `resolver` に渡す。型は `z.infer` で取る。
+* Zod v4 を使うときは、`@hookform/resolvers` を 3.10 以上にし、`tsconfig.json` の `moduleResolution` を `"bundler"`・`"node16"`・`"nodenext"` のいずれかにする（合わないと `Cannot find module '@hookform/resolvers/zod'` になる）。
+* Orval の Zod 生成（`client: 'zod'`）は、テンプレートでは使わない。フォームの項目は API のリクエスト本文と一致しないことが多く、フォーム専用のスキーマのほうが素直なため。一致するアプリが、必要なら足す。
 
 ## API クライアントの生成（Orval）
 

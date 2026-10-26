@@ -8,7 +8,7 @@ Expo アプリの共通ベース。「この構成でアプリを作って」と
 * [選定ライブラリ](./docs/tech-stack.md): 何を使うか、なぜか、どう使うか（TanStack Query、Orval）
 * [開発環境と設定](./docs/development.md): 環境変数、開発ビルドと Expo Go、ビルドと配布（EAS）
 * [テスト](./docs/testing.md): 何をどのテストで確かめるか（Vitest、Playwright）
-* [画面の書き方](./docs/screens.md): データ取得を伴う画面の 4 状態
+* [画面の書き方](./docs/screens.md): データ取得を伴う画面の 4 状態、フォーム
 * [認証](./docs/auth.md): トークンの保存と扱い（`expo-secure-store`、Web は Cookie）
 
 **同じ事実は 1 か所にだけ書く。** 置き場はフォルダ構成、ライブラリの採用理由と使い方は選定ライブラリ、設定と動かし方は開発環境と設定、テストの方針はテスト、画面の書き方は画面の書き方、トークンの保存は認証が持つ。
