@@ -6,7 +6,7 @@ Expo アプリの共通ベース。「この構成でアプリを作って」と
 
 * [フォルダ構成](./docs/folder-structure.md): どこに置くか（route、feature、共通フォルダ、platform 別コード、style と test）
 * [選定ライブラリ](./docs/tech-stack.md): 何を使うか、なぜか、どう使うか（TanStack Query、Orval）
-* [開発環境と設定](./docs/development.md): 環境変数、開発ビルドと Expo Go、ビルドと配布（EAS）
+* [開発環境と設定](./docs/development.md): 環境変数、開発ビルドと Expo Go、Lint・Format・型、ビルドと配布（EAS）
 * [テスト](./docs/testing.md): 何をどのテストで確かめるか（Vitest、Playwright）
 * [画面の書き方](./docs/screens.md): データ取得を伴う画面の 4 状態、フォーム
 * [認証](./docs/auth.md): トークンの保存と扱い（`expo-secure-store`、Web は Cookie）
@@ -23,5 +23,6 @@ Expo アプリの共通ベース。「この構成でアプリを作って」と
 * 日常の開発は開発ビルドで行う。Expo Go で動くことを前提にコードを書かない
 * `EXPO_PUBLIC_` の値はバンドルに埋め込まれ、利用者から見える。秘密鍵・トークンは入れない
 * 認証トークンは、ネイティブでは `expo-secure-store`、Web では `httpOnly` Cookie に置く。`localStorage` などには入れない
+* 完了を報告する前に、`lint`・`typecheck`・`test` をすべて通す
 * ファイル名は kebab-case に統一する。test は対象ファイルの隣に置く
 * Expo は破壊的変更が多い。ライブラリの API に触る前に、使用中の版の公式ドキュメントを確認する

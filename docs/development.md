@@ -65,6 +65,48 @@ JavaScript / TypeScript だけの変更なら、再ビルドは要らない（�
 
 Web 版（Playwright の E2E）には影響しない。
 
+## Lint・Format・型
+
+### Lint
+
+* ESLint と `eslint-config-expo`（flat config）を使う。`npx expo lint` で実行する。設定は `eslint.config.js`。
+* 生成物（`src/api/generated/`）は検査しない。
+
+### Format
+
+* Prettier を、ESLint のプラグイン（`eslint-plugin-prettier`）経由で実行する。整形の違反も `lint` で検出される。
+* 設定は `.prettierrc`。**Standard Style（StandardJS）に準拠する。** 共有設定 `prettier-config-standard` と同じ値で、Prettier 3 の既定値と違う次の 4 項目だけを書く（パッケージには依存しない）。
+  * `semi: false`（セミコロンなし）
+  * `singleQuote: true`（文字列はシングルクォート）
+  * `jsxSingleQuote: true`（JSX の属性値もシングルクォート）
+  * `trailingComma: none`（末尾のカンマなし。Prettier 3 の既定は `all`）
+* Expo の公式ガイドは、Prettier の設定の例を示していない。上の準拠は、このテンプレートの選択。
+* 生成物は整形しない（`.prettierignore`）。整形すると、生成のたびに全行が書き換わる。
+* 整形は `npm run format`（`prettier --write .`）で行う。
+
+インストールは `npx expo install prettier eslint-config-prettier eslint-plugin-prettier --dev`。
+
+### 型
+
+* TypeScript は strict。`tsconfig.json` は `expo/tsconfig.base` を継承し、`@/*` を `./src/*` に解決する。
+* 型の検査は `npm run typecheck`（`tsc --noEmit`）。
+
+### スクリプト
+
+`package.json` のスクリプト名はそろえる。
+
+| スクリプト | 内容 |
+| --- | --- |
+| `start` / `ios` / `android` / `web` | 開発サーバーの起動 |
+| `lint` | `expo lint` |
+| `format` | `prettier --write .` |
+| `typecheck` | `tsc --noEmit` |
+| `test` / `test:watch` | Vitest（[テスト](./testing.md)） |
+| `e2e` | Playwright（[テスト](./testing.md)） |
+| `generate` | `orval`（API クライアントの生成） |
+
+**完了を報告する前に、`lint`・`typecheck`・`test` をすべて通す。**
+
 ## ビルドと配布（EAS）
 
 `eas.json` に、ビルドの種類（プロファイル）を 3 つ定義している。

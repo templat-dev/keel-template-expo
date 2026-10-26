@@ -19,13 +19,13 @@ Expo アプリの画面の書き方のルール。置き場は[フォルダ構�
 
 ```tsx
 export function ItemList() {
-  const { data, isPending, error, refetch } = useGetItems();
+  const { data, isPending, error, refetch } = useGetItems()
 
-  if (isPending) return <Loading />;
-  if (error) return <ErrorView message={error.message} onRetry={refetch} />;
-  if (data.length === 0) return <EmptyView message="商品がありません" />;
+  if (isPending) return <Loading />
+  if (error) return <ErrorView message={error.message} onRetry={refetch} />
+  if (data.length === 0) return <EmptyView message='商品がありません' />
 
-  return <ItemListView items={data} />;
+  return <ItemListView items={data} />
 }
 ```
 
@@ -50,21 +50,21 @@ export function ItemList() {
 ```tsx
 // src/features/items/utils/item-form.ts
 export const itemFormSchema = z.object({
-  name: z.string().min(1, "名前を入力してください"),
-});
-export type ItemFormValues = z.infer<typeof itemFormSchema>;
+  name: z.string().min(1, '名前を入力してください')
+})
+export type ItemFormValues = z.infer<typeof itemFormSchema>
 ```
 
 ```tsx
 // src/features/items/screens/item-create.tsx
 const { control, handleSubmit, formState } = useForm<ItemFormValues>({
   resolver: zodResolver(itemFormSchema),
-  defaultValues: { name: "" },
-});
+  defaultValues: { name: '' }
+})
 
 <Controller
   control={control}
-  name="name"
+  name='name'
   render={({ field, fieldState }) => (
     <TextField
       value={field.value}
@@ -75,7 +75,7 @@ const { control, handleSubmit, formState } = useForm<ItemFormValues>({
   )}
 />
 <Button
-  title="登録"
+  title='登録'
   disabled={formState.isSubmitting}
   onPress={handleSubmit(onSubmit)}
 />

@@ -37,8 +37,11 @@ Expo アプリのフォルダ構成ルール。画面本体・hooks を機能単
 ├── .env.local                     # 各自の端末固有の値（git 管理外。.env.example をコピーして作る）
 ├── .env.development               # 開発時の値（環境ごとに違うときだけ書く）
 ├── .env.production                # 本番ビルドの値（同上）
+├── .prettierrc                    # Prettier の設定（Standard Style 準拠）
+├── .prettierignore                # Prettier の対象外（生成物）
 ├── app.json
 ├── eas.json
+├── eslint.config.js
 ├── orval.config.ts
 ├── package.json
 ├── playwright.config.ts
@@ -75,19 +78,19 @@ route は薄く保つ
 
 ```tsx
 // src/app/item/[id].tsx
-import { useLocalSearchParams } from "expo-router";
-import { ItemDetail } from "@/features/items/screens/item-detail";
+import { useLocalSearchParams } from 'expo-router'
+import { ItemDetail } from '@/features/items/screens/item-detail'
 
 export default function ItemDetailRoute() {
-  const { id } = useLocalSearchParams<{ id: string }>();
-  return <ItemDetail itemId={Number(id)} />;
+  const { id } = useLocalSearchParams<{ id: string }>()
+  return <ItemDetail itemId={Number(id)} />
 }
 ```
 
 パラメータのない画面は 1 行にできる。
 
 ```tsx
-export { Home as default } from "@/features/home/screens/home";
+export { Home as default } from '@/features/home/screens/home'
 ```
 
 画面タイトル
@@ -149,6 +152,6 @@ typed routes
 ### 8. その他
 
 * ファイル名は kebab-case に統一する。
-* `app.json`（または `app.config.ts`）、`eas.json`、`orval.config.ts`、`package.json`、`tsconfig.json`、`vitest.config.ts`、`playwright.config.ts`、`.env*`、`assets/`、`scripts/`、`e2e/` は `src/` の外に置く。
+* `app.json`（または `app.config.ts`）、`eas.json`、`eslint.config.js`、`.prettierrc`、`orval.config.ts`、`package.json`、`tsconfig.json`、`vitest.config.ts`、`playwright.config.ts`、`.env*`、`assets/`、`scripts/`、`e2e/` は `src/` の外に置く。
 * `.env*` はプロジェクトのルートに置く（Expo CLI が探すのはルートだけ）。使い方は[開発環境と設定](./development.md#環境変数)。
 * `CLAUDE.md` / `AGENTS.md` はリポジトリ直下、project skills は `.claude/` 配下。

@@ -16,6 +16,9 @@
 | スタイル               | `StyleSheet`（標準）  | アプリごとに変えてよい                                                                       |
 | 単体テスト             | Vitest（node 環境）   | 純粋なロジックだけが対象。方針は[テスト](./testing.md)                                       |
 | E2E テスト             | Playwright            | Web 版（react-native-web）が対象。方針は[テスト](./testing.md)                               |
+| Lint                   | ESLint + `eslint-config-expo` | flat config。方針は[開発環境と設定](./development.md#lintformat型) |
+| Format                 | Prettier             | ESLint のプラグイン経由で実行する。Standard Style 準拠                                              |
+| 型                     | TypeScript（strict） | `expo/tsconfig.base` を継承する                                                              |
 
 ここに無い領域（アニメーション、国際化など）は未決。アプリごとに選び、そのアプリの `CLAUDE.md` に書く。新しいライブラリの追加は、事前に提案する。
 
@@ -66,7 +69,7 @@
 生成された hook を、画面から直接呼んでよい。URL の文字列もキャッシュキーも画面に出てこないため、手書きの hook で包む理由がない。
 
 ```tsx
-const { data } = useGetItem(itemId);
+const { data } = useGetItem(itemId)
 ```
 
 hook の名前は OpenAPI の `operationId` に由来する。
@@ -78,15 +81,15 @@ hook の名前は OpenAPI の `operationId` に由来する。
 ```tsx
 // src/features/items/hooks/use-create-item.ts
 export function useCreateItem() {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
   return usePostItems({
     mutation: {
       onSuccess: () => {
         // 「操作 → 捨てる対象」の表のとおりに無効化する
-        queryClient.invalidateQueries({ queryKey: getGetItemsQueryKey() });
-      },
-    },
-  });
+        queryClient.invalidateQueries({ queryKey: getGetItemsQueryKey() })
+      }
+    }
+  })
 }
 ```
 
