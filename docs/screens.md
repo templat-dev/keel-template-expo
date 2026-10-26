@@ -111,6 +111,19 @@ const { control, handleSubmit, formState } = useForm<ItemFormValues>({
 </Pressable>
 ```
 
+## 一覧の描画
+
+`ScrollView` は、中身をすべて一度に描画する。`FlatList` は、見えている範囲だけを描画する（仮想化）。件数に応じて使い分ける。
+
+| 一覧の件数 | 使うもの |
+| --- | --- |
+| 少なく、上限が決まっている（数十件まで） | `ScrollView` |
+| 増えうる、または上限がない | `FlatList` |
+| 非常に多く、`FlatList` で滑らかに動かない | `@shopify/flash-list` を検討する |
+
+* 迷ったら `FlatList` を選ぶ。件数が少ないうちは差が出ないが、増えたときに書き換えずに済む。
+* ほかの要素（ヘッダーなど）の中に `FlatList` を入れ子にしない。縦の `ScrollView` の中に縦の `FlatList` を置くと、仮想化が効かなくなる。ヘッダーは `ListHeaderComponent` に渡す。
+
 ## メモ化
 
 `experiments.reactCompiler` を有効にしているため（[開発環境と設定](./development.md#appjson-の既定)）、**`useCallback`・`useMemo`・`React.memo` は書かない。** React Compiler が自動でメモ化する。
