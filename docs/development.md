@@ -105,7 +105,14 @@ Web 版（Playwright の E2E）には影響しない。
 | `e2e` | Playwright（[テスト](./testing.md)） |
 | `generate` | `orval`（API クライアントの生成） |
 
-**完了を報告する前に、`lint`・`typecheck`・`test` をすべて通す。**
+## 依存パッケージ
+
+* 追加は `npx expo install <パッケージ>` で行う。プロジェクトの `react-native` に合うバージョンが選ばれる。`npm install` の代わりに使え、Expo 管轄外のパッケージもそのまま入る。
+* Expo が管理するパッケージのバージョン範囲（`~` で始まるもの）は、手で書き換えない。
+* バージョンの不整合は `npx expo install --check` で検出する（不整合があると非ゼロで終了するので、CI で使える）。`npx expo install --fix` で直す。
+* パッケージマネージャーは npm。Expo の公式ドキュメントと既知の不具合の情報が、npm を前提にしているため。`package-lock.json` はコミットする。
+* Node は `package.json` の `engines` で宣言する: `"engines": { "node": "^24.3.0" }`。Node 24 は LTS で、`react-native` の要求（24 系なら 24.3.0 以上）に合う。`engines` は宣言なので、バージョンの切り替えは各自のツールで行う。
+* Expo SDK の更新は、1 回に 1 つずつ上げる。手順は公式のアップグレードガイドに従う。更新後は開発ビルドを作り直す。
 
 ## app.json の既定
 

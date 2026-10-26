@@ -20,7 +20,7 @@
 | Format                 | Prettier             | ESLint のプラグイン経由で実行する。Standard Style 準拠                                              |
 | 型                     | TypeScript（strict） | `expo/tsconfig.base` を継承する                                                              |
 
-ここに無い領域（アニメーション、国際化など）は未決。アプリごとに選び、そのアプリの `CLAUDE.md` に書く。新しいライブラリの追加は、事前に提案する。
+ここに無い領域（アニメーション、国際化など）は未決。アプリごとに選び、そのアプリの `CLAUDE.md` に書く。
 
 ## クライアント状態（Jotai）
 
