@@ -1,0 +1,55 @@
+# 認証
+
+認証を持つ Expo アプリの、トークンの保存と扱いのルール。置き場は[フォルダ構成](./folder-structure.md)、使うライブラリは[選定ライブラリ](./tech-stack.md)が持つ。本資料は「トークンをどこに保存し、どう扱うか」を扱う。
+
+ログイン画面や認証の方式（OAuth など）は、アプリごとに決める。リフレッシュトークンによるアクセストークンの更新も、このテンプレートの範囲に入れない。必要なアプリが足す。
+
+## 保存先
+
+| プラットフォーム | 保存先                                              | 理由                                                                                    |
+| ---------------- | --------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| ネイティブ       | `expo-secure-store`                                 | iOS は Keychain、Android は Keystore で暗号化される。Expo Go でも動く                   |
+| Web              | `httpOnly` Cookie（サーバーが `Set-Cookie` で設定） | JavaScript から読めないため、XSS でトークンが盗まれにくい。フロントはトークンを持たない |
+
+* **`localStorage`・`sessionStorage`・`atomWithStorage`（AsyncStorage）には入れない。**
+* `expo-secure-store` は Web に対応していない。
+* Web の Cookie 認証は、バックエンドが対応している必要がある（`Set-Cookie`、CORS の資格情報、CSRF 対策）。対応していないアプリは、トークンをメモリ上でだけ持つ（リロードでログアウトする）。
+
+## 通信
+
+mutator（`src/api/mutator.ts`）が、プラットフォームごとに認証を付ける。
+
+* ネイティブ: `Authorization: Bearer` ヘッダを付ける。
+* Web: `credentials: "include"` で Cookie を送る。トークンのヘッダは付けない。
+
+## 認証状態
+
+認証状態は、メモリ上の Jotai の atom で持つ。`atomWithStorage` は使わない。
+
+* 起動時
+  * ネイティブ: `expo-secure-store` からトークンを読み、atom に載せる。
+  * Web: セッション確認（`GET /me` など）を行い、**確認が終わるまで画面を描かない。** 描くと、リロードのたびに「ログインが必要です」が一瞬出る。
+* 401 を受けたとき: mutator が `getDefaultStore()` で認証状態を未ログインに戻し、`expo-secure-store` の値も消す。
+* ログアウトのとき: 次の 3 つをすべて消す。
+  * 認証状態の atom
+  * `expo-secure-store` の値
+  * TanStack Query のキャッシュ（`queryClient.clear()`）。前のユーザーのデータが、次のユーザーに見えないようにする。
+
+## 置き場
+
+プラットフォーム別コードのルールに従い、ファイルを分ける。mutator が使うので、`src/api/` に置く。
+
+```
+src/api/
+├── token-storage.ts       # ネイティブ: expo-secure-store に保存・読み出し・削除
+└── token-storage.web.ts   # Web: 何もしない（Cookie はサーバーが持つ）
+```
+
+2 つのファイルで、関数の形（`get`・`set`・`clear`）を揃える。
+
+## 注意点
+
+* `requireAuthentication`（生体認証）は Expo Go で動かないので、既定では使わない。
+* 保存・読み出しは `try/catch` で囲む（認証がキャンセルされたり、失敗したりするとエラーになる）。
+* iOS では、アプリを再インストールしても値が残ることがある。保証されないので、前提にしない。
+* 古い iOS では、約 2048 バイトを超える値が拒否されたことがある。JWT のように長いトークンを入れるときは注意する。

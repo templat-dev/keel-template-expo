@@ -24,7 +24,9 @@ Expo アプリのフォルダ構成ルール。画面本体・hooks を機能単
 │   │   ├── openapi.yaml           #   API 契約（生成の入力）
 │   │   ├── generated/
 │   │   ├── mutator.ts
-│   │   └── query-client.ts
+│   │   ├── query-client.ts
+│   │   ├── token-storage.ts       #   認証トークンの保存（ネイティブ）
+│   │   └── token-storage.web.ts   #   同上（Web。何もしない）
 │   ├── components/                # 複数 feature で使う共通 UI（Loading・ErrorView・EmptyView など）
 │   ├── hooks/                     # 複数 feature で使う共通 hooks
 │   ├── utils/                     # 純粋な helper + 同居する test

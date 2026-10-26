@@ -11,6 +11,7 @@
 | クライアント状態       | Jotai                | サーバー状態以外の状態。使い方は下の「クライアント状態（Jotai）」                            |
 | API クライアントの生成 | Orval                | OpenAPI 契約から、型・API 呼び出し関数・TanStack Query の hook を生成する                    |
 | 通信                   | 標準の `fetch`       | Orval の mutator に認証ヘッダと 401 処理を集約する                                           |
+| トークンの保存         | `expo-secure-store`  | ネイティブのみ。Web は `httpOnly` Cookie。方針は[認証](./auth.md)                            |
 | スタイル               | `StyleSheet`（標準） | アプリごとに変えてよい                                                                       |
 | 単体テスト             | Vitest（node 環境）  | 純粋なロジックだけが対象。方針は[テスト](./testing.md)                                       |
 | E2E テスト             | Playwright           | Web 版（react-native-web）が対象。方針は[テスト](./testing.md)                               |
@@ -26,7 +27,7 @@
 * atom の置き場は、専用のフォルダを作らず、使うファイルに直接書いてよい（[フォルダ構成](./folder-structure.md#3-昇格ルール共通フォルダへの移動)）。
 * React の外（mutator など）から読み書きするときは、`getDefaultStore()` で取った既定のストアに `get` / `set` する。たとえば、API が 401 を返したときに、mutator が認証状態の atom を未ログインへ戻せる。
 * 永続化は `atomWithStorage` を使う。React Native では `createJSONStorage` に AsyncStorage を渡す。AsyncStorage は非同期なので、atom の値は Promise になり、現在の値を見て更新するときは `await` が要る。
-* **認証トークンなど秘密の値は、`atomWithStorage`（AsyncStorage）に入れない。** 保存先の規約は別に定める。
+* **認証トークンなど秘密の値は、`atomWithStorage`（AsyncStorage）に入れない。** 保存先の規約は[認証](./auth.md)が持つ。
 
 ## API クライアントの生成（Orval）
 
