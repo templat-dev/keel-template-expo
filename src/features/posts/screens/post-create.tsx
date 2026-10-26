@@ -12,7 +12,7 @@ import {
   postFormSchema,
   toNewPost,
   type PostFormValues
-} from '../utils/post-form'
+} from '../schemas/post-form'
 
 // JSONPlaceholder には認証がないので、投稿者は固定にする。
 const SAMPLE_USER_ID = 1
