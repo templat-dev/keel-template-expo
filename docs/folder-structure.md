@@ -1,0 +1,153 @@
+# フォルダ構成
+
+Expo アプリのフォルダ構成ルール。画面本体・hooks を機能単位（`features/<name>/`）にまとめる。
+
+本資料は「どこに置くか」だけを扱う。使うライブラリと、その使い方は[選定ライブラリ](./tech-stack.md)が持つ。
+
+## 全体像
+
+```
+├── assets/
+├── scripts/
+├── src/
+│   ├── app/                       # Expo Router の route 専用。ここのファイルは全て route になる
+│   │   ├── _layout.tsx
+│   │   ├── _layout.web.tsx        #   platform 別 layout
+│   │   └── index.tsx              #   features/<name>/screens の画面を描画するだけ
+│   ├── features/                  # 機能単位のまとまり（粗く切る）
+│   │   └── home/
+│   │       ├── screens/           #   画面本体（複数可）。route から描画される
+│   │       ├── components/        #   home 内だけで使う component
+│   │       ├── hooks/             #   home 内だけで使う hooks
+│   │       └── utils/             #   home 内だけで使う純粋な helper + 同居する test
+│   ├── api/                       # API 契約・クライアント・生成物。生成物は手で編集しない
+│   │   ├── openapi.yaml           #   API 契約（生成の入力）
+│   │   ├── generated/
+│   │   ├── mutator.ts
+│   │   └── query-client.ts
+│   ├── components/                # 複数 feature で使う共通 UI
+│   ├── hooks/                     # 複数 feature で使う共通 hooks
+│   ├── utils/                     # 純粋な helper + 同居する test
+│   ├── providers/                 # 横断的な Context（認証など）。必要になったら作る
+│   ├── constants.ts
+│   └── theme.ts
+├── e2e/                           # Playwright の E2E テスト（*.spec.ts）
+├── .env.example                   # 環境変数の見本（コミット）
+├── .env.local                     # 各自の端末固有の値（git 管理外。.env.example をコピーして作る）
+├── .env.development               # 開発時の値（環境ごとに違うときだけ書く）
+├── .env.production                # 本番ビルドの値（同上）
+├── app.json
+├── eas.json
+├── orval.config.ts
+├── package.json
+├── playwright.config.ts
+├── tsconfig.json
+├── vitest.config.ts
+└── CLAUDE.md
+```
+
+tsconfig の `@/*` は `./src/*` を指す（例: `@/features/home/screens/home`）。
+
+## ルール
+
+### 1. src/app は route 専用
+
+ここには、ファイル名・パス・ナビゲーション構造に結びつくものだけを置く。置いたファイルは全て route として扱われるため、それ以外は置かない。
+
+置くもの
+
+* route ファイル（URL パラメータの読み取りと、文脈なしで決まる型変換・検証を含む）
+* `_layout`（Stack・Tabs の構成、画面名の一覧、画面タイトル、認証ガード、`unstable_settings`）と platform 別 layout
+* 純粋なリダイレクト、`+not-found`、`ErrorBoundary`、`SuspenseFallback`、`+native-intent` などの規約ファイル・export
+
+置かないもの（画面本体の側に置く）
+
+* 画面の挙動（`router.push` などの遷移、`useFocusEffect`、データに依存するヘッダー）
+* 実行時のデータが要る解釈（有効な範囲内か、権限があるか）
+* レイアウトの見た目の細部（タブバーの寸法など）。長くなったら画面名の一覧を残して外に出す
+
+route は薄く保つ
+
+* route 側で行うのは、URL パラメータの読み取りと、文脈なしで決まる変換・検証（`Number(id)`、許可された値かの確認）まで。
+* 不正な値のときの表示（エラー表示、not-found、リダイレクト）も route が決める。
+* 画面本体には、型付きの値を props で渡す。
+
+```tsx
+// src/app/item/[id].tsx
+import { useLocalSearchParams } from "expo-router";
+import { ItemDetail } from "@/features/items/screens/item-detail";
+
+export default function ItemDetailRoute() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  return <ItemDetail itemId={Number(id)} />;
+}
+```
+
+パラメータのない画面は 1 行にできる。
+
+```tsx
+export { Home as default } from "@/features/home/screens/home";
+```
+
+画面タイトル
+
+* 既定は `_layout` の `<Stack.Screen name="..." options={{ title }} />` に直接書く。読み込み中や未ログインのような早期 return の状態でも効く。
+* 複数の消費者（ネイティブと Web の layout など）が同じ一覧を読むようになったら、表に切り出す。切り出したら、route の一覧と突き合わせるテストを一緒に置く。
+* 取得したデータに依存するタイトル（商品名など）は、layout に既定の題を持たせ、読み込み後に画面本体の `Stack.Screen` で上書きする。
+
+認証ガード
+
+* 「どの URL に誰が入れるか」は `_layout` の `Stack.Protected` / `Tabs.Protected` で書く。
+
+typed routes
+
+* `app.json` の `experiments.typedRoutes` を有効にし、`href` はキャストせず型付きで渡す。
+
+### 2. features/<name>/ は機能単位
+
+画面本体、その機能専用の `components/`・`hooks/`・`utils/` を同居させる。
+
+* 画面本体は `screens/` に置く。1 つの feature に複数の画面を置いてよい（例: 一覧・詳細・確認）。
+* 計算・検証などの純粋なロジックは `utils/` に置く（副作用を持たない関数。単体テストの対象）。
+* 最初に迷ったら、まず `features/<name>/` に置く。
+* feature は業務のまとまりで切る。画面ごとや API リソースごとに細かく切らない。
+
+### 3. 昇格ルール（共通フォルダへの移動）
+
+* 最初は全て `features/<name>/` 配下に置く。
+* 2 つ目の feature で同じものが必要になった時点で、種類に応じて共通フォルダへ移す。
+  * UI → `src/components/`
+  * hooks → `src/hooks/`
+  * 純粋な helper → `src/utils/`
+  * 横断的な Context → `src/providers/`
+* 2 つ目が出る前に、先回りして共通化しない。
+
+### 4. feature 間の依存
+
+* feature 同士は直接 import しない。別の feature のものが必要になったら、共通フォルダへ昇格させてから使う（昇格先は 3 を参照）
+
+### 5. 共通フォルダ
+
+* `components/`: 複数 feature で使う汎用 UI のみ。named export は 1 ファイル 1 つ。ファイル名は kebab-case（`bar-chart.tsx`）。
+* 肥大化した component は folder 化して `index.tsx` を root にし、private な sub-component を同居させる（import path は変わらない）。
+* `hooks/`・`utils/`・`providers/`: 複数 feature で使うものだけを置く。
+
+### 6. platform 別コード
+
+* 小さな差分は `Platform.select` / `Platform.OS` で書く。
+* 大きな差分はファイルを分ける（`bar-chart.tsx` + `bar-chart.web.tsx`）。import は拡張子なしで書く（`@/components/bar-chart`）。
+* 対応する拡張子は `.ios` `.android` `.native` `.web`。
+* 全 variant で props を揃える。
+* 拡張子なしの default ファイルは必須（単一 platform 専用の component なら no-op にする）。
+
+### 7. style と test は同居
+
+* style: `StyleSheet.create({ ... })` は component ファイルの末尾に置く（`.styles` ファイルを作らない）。
+* test: 対象ファイルの隣に置く（`format-date.test.ts`）。`__tests__/` は作らない。E2E テストだけは、リポジトリ直下の `e2e/` に置く（方針は[テスト](./testing.md)）。
+
+### 8. その他
+
+* ファイル名は kebab-case に統一する。
+* `app.json`（または `app.config.ts`）、`eas.json`、`orval.config.ts`、`package.json`、`tsconfig.json`、`vitest.config.ts`、`playwright.config.ts`、`.env*`、`assets/`、`scripts/`、`e2e/` は `src/` の外に置く。
+* `.env*` はプロジェクトのルートに置く（Expo CLI が探すのはルートだけ）。使い方は[開発環境と設定](./development.md#環境変数)。
+* `CLAUDE.md` / `AGENTS.md` はリポジトリ直下、project skills は `.claude/` 配下。

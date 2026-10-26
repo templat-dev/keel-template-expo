@@ -1,0 +1,80 @@
+# 選定ライブラリ
+
+このテンプレートが採用するライブラリと、その使い方。置き場は[フォルダ構成](./folder-structure.md)が持つ。本資料は「何を使うか、なぜか、どう使うか」を扱う。
+
+## 採用一覧
+
+| 領域                   | 採用                 | 備考                                                                                         |
+| ---------------------- | -------------------- | -------------------------------------------------------------------------------------------- |
+| ルーティング           | Expo Router          | ファイルベース。route の書き方は[フォルダ構成](./folder-structure.md#1-srcapp-は-route-専用) |
+| データ取得・キャッシュ | TanStack Query       |                                                                                              |
+| API クライアントの生成 | Orval                | OpenAPI 契約から、型・API 呼び出し関数・TanStack Query の hook を生成する                    |
+| 通信                   | 標準の `fetch`       | Orval の mutator に認証ヘッダと 401 処理を集約する                                           |
+| スタイル               | `StyleSheet`（標準） | アプリごとに変えてよい                                                                       |
+| 単体テスト             | Vitest（node 環境）  | 純粋なロジックだけが対象。方針は[テスト](./testing.md)                                       |
+| E2E テスト             | Playwright           | Web 版（react-native-web）が対象。方針は[テスト](./testing.md)                               |
+
+状態管理（サーバー状態以外）、フォームなどは未決。アプリごとに選び、そのアプリの `CLAUDE.md` に書く。
+
+## API クライアントの生成（Orval）
+
+### 役割
+
+* `src/api/openapi.yaml` から、型・API 呼び出し関数・TanStack Query の hook を生成する。契約をバックエンドと共有するアプリは、`orval.config.ts` の入力パスを共有の場所に向けてよい。
+* 通信ライブラリではない。通信は標準の `fetch` で行い、認証ヘッダと 401 処理は mutator（`src/api/mutator.ts`）に集約する。
+* 生成物は `src/api/generated/` に置く。**手で編集しない。** 型が合わないときは OpenAPI 契約を直して再生成する。
+* 設定ファイル（`orval.config.ts`）は `src/` の外（リポジトリ直下）に置く。
+
+### 採用理由
+
+* hook まで生成でき、手書きを最小にできる。
+* 画面から URL の文字列が消え、関数名の typo をコンパイルで検出できる。
+* 8.x で安定している。
+
+### 弱点と補い方
+
+* キャッシュキーの形が生成側で決まり、暗黙になる。
+* 補い方は 2 つ。更新で捨てる対象を「操作 → 捨てる対象」の表で明示する。無効化のテストで取りこぼしを検出する。
+
+## 取得と更新の呼び方（TanStack Query + Orval）
+
+### 取得
+
+生成された hook を、画面から直接呼んでよい。URL の文字列もキャッシュキーも画面に出てこないため、手書きの hook で包む理由がない。
+
+```tsx
+const { data } = useGetItem(itemId);
+```
+
+hook の名前は OpenAPI の `operationId` に由来する。
+
+### 更新
+
+生成された hook を画面から直接呼んでよい。ただし、**更新後にキャッシュの無効化などの処理が要るときだけ**、feature の `hooks/` に包んだ hook を作る。無効化の要らない更新は、包まない。
+
+```tsx
+// src/features/items/hooks/use-create-item.ts
+export function useCreateItem() {
+  const queryClient = useQueryClient();
+  return usePostItems({
+    mutation: {
+      onSuccess: () => {
+        // 「操作 → 捨てる対象」の表のとおりに無効化する
+        queryClient.invalidateQueries({ queryKey: getGetItemsQueryKey() });
+      },
+    },
+  });
+}
+```
+
+`useGetItem`・`usePostItems` などの名前は、OpenAPI の `operationId` から決まる例。
+
+### 無効化を 1 か所にまとめる選択肢
+
+更新が多いアプリは、`QueryClient` の `MutationCache` に共通の `onSuccess` を置き、更新ごとに `meta` で「何を捨てるか」を付ける方式も選べる。画面にもラップ hook にも、無効化のコードを書かなくて済む。更新が少ないうちは、上の包んだ hook で足りる。
+
+### feature の `hooks/` に残るもの
+
+* 無効化などを伴う更新のラップ
+* 複数の生成 hook を組み合わせる合成（画面の状態、入力フォーム、派生値）
+* 画面の挙動（フォーカス時の再取得など）
