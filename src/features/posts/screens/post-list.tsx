@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
 
 import { useListPosts } from '@/api/generated'
+import type { Post } from '@/api/generated/model'
 import { EmptyView } from '@/components/empty-view'
 import { ErrorView } from '@/components/error-view'
 import { Loading } from '@/components/loading'
@@ -67,7 +68,7 @@ function PostListBody({
 }: {
   isPending: boolean
   error: Error | null
-  data: { id: number; title: string }[] | undefined
+  data: Post[] | undefined
   onRetry: () => void
 }) {
   const colors = useTheme()

@@ -1,6 +1,9 @@
 import { expect, test, type Page } from '@playwright/test'
 
-const API = 'http://api.test'
+// API の接続先は、.env.local の有無で変わる（.env.local の値が優先される）。ホストは見ず、
+// アプリ自身（localhost）以外へ出る /posts へのリクエストを API として差し替える。
+const isApi = (url: URL) =>
+  url.hostname !== 'localhost' && url.pathname.startsWith('/posts')
 const CORS = {
   'access-control-allow-origin': '*',
   'access-control-allow-headers': '*'
@@ -14,7 +17,7 @@ const posts = [
 // API は実物に届かせず、ここで差し替える。
 async function mockApi(page: Page, options: { failList?: boolean } = {}) {
   let failList = options.failList ?? false
-  await page.route(`${API}/**`, async (route) => {
+  await page.route(isApi, async (route) => {
     const request = route.request()
     const url = new URL(request.url())
     if (request.method() === 'OPTIONS') {
@@ -88,7 +91,7 @@ test('空のまま登録するとエラーが出て、入力すると投稿で�
   await expect(page.getByText('本文を入力してください')).toBeVisible()
 
   const posted = page.waitForRequest(
-    (request) => request.method() === 'POST' && request.url() === `${API}/posts`
+    (request) => request.method() === 'POST' && isApi(new URL(request.url()))
   )
   await page.getByTestId('post-title').fill('新しい投稿')
   await page.getByTestId('post-body').fill('新しい本文')

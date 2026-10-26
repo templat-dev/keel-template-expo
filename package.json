@@ -13,7 +13,7 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "format": "prettier --write .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "expo customize tsconfig.json && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "e2e": "playwright test",
