@@ -1,0 +1,30 @@
+# 依存
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# ネイティブのビルド成果物・署名鍵
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# 環境変数（端末固有の値。.env.example をコピーして作る）
+.env*.local
+
+# ログ
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# IDE
+.idea/
+
+# OS
+.DS_Store
