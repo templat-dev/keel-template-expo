@@ -19,7 +19,7 @@ Expo アプリのテスト方針。置き場は[フォルダ構成](./folder-str
 * **計算・検証などの判断は、副作用のない純粋な関数に寄せて書く**（feature の `utils/` に置く）。画面や hook の中に判断を埋め込むと、テストで確かめられない。
 * 外部の入出力（ネットワーク・現在時刻・乱数）に触れる必要があるときは、引数で受け取る。
 * 1 テスト 1 つの振る舞い。異常系を先に書く。
-* スクリプトは `test`（1 回実行）と `test:watch`。設定は `vitest.config.ts`（`@` を `src` に解決する alias を含める）。
+* スクリプトは `test`（1 回実行）と `test:watch`。設定は `vitest.config.mts`（`@` を `src` に解決する alias を含める）。ESM の構文で書くため、拡張子は `.mts`（`.ts` だと CommonJS として読まれ、警告が出る）。`__dirname` は使えないので、`import.meta.dirname` を使う。
 
 ## E2E テスト（Playwright）
 

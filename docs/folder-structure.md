@@ -46,7 +46,7 @@ Expo アプリのフォルダ構成ルール。画面本体・hooks を機能単
 ├── package.json
 ├── playwright.config.ts
 ├── tsconfig.json
-├── vitest.config.ts
+├── vitest.config.mts
 └── CLAUDE.md
 ```
 
@@ -152,6 +152,6 @@ typed routes
 ### 8. その他
 
 * ファイル名は kebab-case に統一する。
-* `app.json`（または `app.config.ts`）、`eas.json`、`eslint.config.js`、`.prettierrc`、`orval.config.ts`、`package.json`、`tsconfig.json`、`vitest.config.ts`、`playwright.config.ts`、`.env*`、`assets/`、`scripts/`、`e2e/` は `src/` の外に置く。
+* `app.json`（または `app.config.ts`）、`eas.json`、`eslint.config.js`、`.prettierrc`、`orval.config.ts`、`package.json`、`tsconfig.json`、`vitest.config.mts`、`playwright.config.ts`、`.env*`、`assets/`、`scripts/`、`e2e/` は `src/` の外に置く。
 * `.env*` はプロジェクトのルートに置く（Expo CLI が探すのはルートだけ）。使い方は[開発環境と設定](./development.md#環境変数)。
 * `CLAUDE.md` / `AGENTS.md` はリポジトリ直下、project skills は `.claude/` 配下。
