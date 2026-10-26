@@ -4,9 +4,9 @@ import { FlatList, Pressable, Text, View } from 'react-native'
 
 import { useListPosts } from '@/api/generated'
 import type { Post } from '@/api/generated/model'
-import { EmptyView } from '@/components/empty-view'
-import { ErrorView } from '@/components/error-view'
-import { Loading } from '@/components/loading'
+import { EmptyView } from '@/components/screen-state/empty-view'
+import { ErrorView } from '@/components/screen-state/error-view'
+import { Loading } from '@/components/screen-state/loading'
 import { useDisplayName } from '@/hooks/use-display-name'
 
 const USER_FILTERS = [undefined, 1, 2, 3]

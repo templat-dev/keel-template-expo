@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from 'expo-router'
 
-import { ErrorView } from '@/components/error-view'
+import { ErrorView } from '@/components/screen-state/error-view'
 import { PostDetail } from '@/features/posts/screens/post-detail'
 
 export default function PostDetailRoute() {

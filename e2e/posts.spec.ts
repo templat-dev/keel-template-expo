@@ -110,3 +110,30 @@ test('設定の表示名が、ホームの挨拶に出る', async ({ page }) => 
   await page.goto('/')
   await expect(page.getByText('たろう さん、こんにちは')).toBeVisible()
 })
+
+test('入力したまま戻ろうとすると、破棄の確認が出る', async ({ page }) => {
+  await mockApi(page)
+  await page.goto('/')
+  await page.getByText('投稿する').click()
+  await page.getByTestId('post-title').fill('書きかけ')
+
+  // 戻ろうとすると確認が出る。「入力を続ける」なら、画面にとどまる
+  await page.getByRole('link', { name: '(tabs), back' }).click()
+  await expect(page.getByText('入力を破棄しますか？')).toBeVisible()
+  await page.getByRole('button', { name: '入力を続ける' }).click()
+  await expect(page.getByText('入力を破棄しますか？')).toBeHidden()
+  await expect(page.getByTestId('post-title')).toHaveValue('書きかけ')
+
+  // 「破棄する」なら、一覧に戻る
+  await page.getByRole('link', { name: '(tabs), back' }).click()
+  await page.getByRole('button', { name: '破棄する' }).click()
+  await expect(page.getByText('最初の投稿')).toBeVisible()
+})
+
+test('何も入力していなければ、確認なしで戻れる', async ({ page }) => {
+  await mockApi(page)
+  await page.goto('/')
+  await page.getByText('投稿する').click()
+  await page.getByRole('link', { name: '(tabs), back' }).click()
+  await expect(page.getByText('最初の投稿')).toBeVisible()
+})

@@ -1,9 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'expo-router'
+import { usePreventRemove, useRouter } from 'expo-router'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Pressable, ScrollView, Text } from 'react-native'
 
-import { TextField } from '@/components/text-field'
+import { Dialog } from '@/components/dialog/dialog'
+import { TextField } from '@/components/form/text-field'
 
 import { useCreatePostAndRefresh } from '../hooks/use-create-post-and-refresh'
 import {
@@ -23,9 +25,25 @@ export function PostCreate() {
     defaultValues: { title: '', body: '' }
   })
 
+  // 入力があるまま画面を離れようとしたら、確認するまで離れるのを保留する。
+  // 確認した後にもう一度同じ操作をするための repeat を、保留した時点で受け取っておく。
+  const [leave, setLeave] = useState<{ repeat: () => void } | null>(null)
+  const [allowLeave, setAllowLeave] = useState(false)
+  const disablePrevention = usePreventRemove(
+    formState.isDirty && !allowLeave,
+    ({ repeat }) => setLeave({ repeat })
+  )
+
   const onSubmit = async (values: PostFormValues) => {
     await mutateAsync({ data: toNewPost(values, SAMPLE_USER_ID) })
+    disablePrevention()
     router.back()
+  }
+
+  const discard = () => {
+    setAllowLeave(true)
+    leave?.repeat()
+    setLeave(null)
   }
 
   return (
@@ -74,6 +92,16 @@ export function PostCreate() {
       >
         <Text className='text-white dark:text-neutral-900'>登録</Text>
       </Pressable>
+      <Dialog
+        visible={leave !== null}
+        title='入力を破棄しますか？'
+        body='入力した内容は保存されません。'
+        onDismiss={() => setLeave(null)}
+        actions={[
+          { label: '入力を続ける', onPress: () => setLeave(null) },
+          { label: '破棄する', onPress: discard, destructive: true }
+        ]}
+      />
     </ScrollView>
   )
 }

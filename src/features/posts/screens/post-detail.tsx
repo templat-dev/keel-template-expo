@@ -2,8 +2,8 @@ import { Stack } from 'expo-router'
 import { ScrollView, Text } from 'react-native'
 
 import { useGetPost } from '@/api/generated'
-import { ErrorView } from '@/components/error-view'
-import { Loading } from '@/components/loading'
+import { ErrorView } from '@/components/screen-state/error-view'
+import { Loading } from '@/components/screen-state/loading'
 
 export function PostDetail({ postId }: { postId: number }) {
   const { data, isPending, error, refetch } = useGetPost(postId)

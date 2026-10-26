@@ -1,6 +1,6 @@
 import { ScrollView } from 'react-native'
 
-import { TextField } from '@/components/text-field'
+import { TextField } from '@/components/form/text-field'
 import { useDisplayName } from '@/hooks/use-display-name'
 
 export function Settings() {
