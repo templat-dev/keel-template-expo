@@ -65,7 +65,7 @@ export function Login() {
             )}
           />
           {error ? (
-            <Text className='text-red-600 dark:text-red-400'>
+            <Text className='text-danger'>
               {error instanceof ApiError && error.status === 400
                 ? 'ユーザー名かパスワードが違います'
                 : 'ログインに失敗しました'}
@@ -75,13 +75,13 @@ export function Login() {
             accessibilityRole='button'
             disabled={formState.isSubmitting}
             onPress={() => handleSubmit(onSubmit)()}
-            className={`items-center rounded-lg bg-sky-700 p-3 dark:bg-sky-400 ${
+            className={`items-center rounded-lg bg-primary p-3 ${
               formState.isSubmitting ? 'opacity-50' : ''
             }`}
           >
-            <Text className='text-white dark:text-neutral-900'>ログイン</Text>
+            <Text className='text-on-primary'>ログイン</Text>
           </Pressable>
-          <Text className='text-neutral-500 dark:text-neutral-400'>
+          <Text className='text-ink-muted'>
             サンプルのユーザー: emilys / emilyspass
           </Text>
         </Content>

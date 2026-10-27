@@ -1,5 +1,7 @@
 import { ActivityIndicator, Modal, Pressable, Text, View } from 'react-native'
 
+import { useTheme } from '@/hooks/use-theme'
+
 type DialogProps = {
   visible: boolean
   title: string
@@ -28,6 +30,7 @@ export function Dialog({
   destructive,
   busy
 }: DialogProps) {
+  const { colors } = useTheme()
   return (
     <Modal
       visible={visible}
@@ -38,17 +41,11 @@ export function Dialog({
       <View className='flex-1 items-center justify-center bg-black/50 px-6'>
         <View
           accessibilityRole='alert'
-          className='w-full max-w-sm gap-4 rounded-2xl bg-white p-6 dark:bg-neutral-800'
+          className='w-full max-w-sm gap-4 rounded-2xl bg-surface-raised p-6'
         >
           <View className='gap-2'>
-            <Text className='text-lg font-bold text-neutral-900 dark:text-neutral-100'>
-              {title}
-            </Text>
-            {message ? (
-              <Text className='text-neutral-600 dark:text-neutral-300'>
-                {message}
-              </Text>
-            ) : null}
+            <Text className='text-lg font-bold text-ink'>{title}</Text>
+            {message ? <Text className='text-ink-muted'>{message}</Text> : null}
           </View>
           <View className='flex-row justify-end gap-3'>
             {cancelLabel ? (
@@ -57,9 +54,7 @@ export function Dialog({
                 onPress={onCancel}
                 className='rounded-lg px-4 py-2'
               >
-                <Text className='font-bold text-neutral-700 dark:text-neutral-200'>
-                  {cancelLabel}
-                </Text>
+                <Text className='font-bold text-ink-muted'>{cancelLabel}</Text>
               </Pressable>
             ) : null}
             <Pressable
@@ -67,15 +62,13 @@ export function Dialog({
               disabled={busy}
               onPress={onConfirm}
               className={`flex-row items-center gap-2 rounded-lg px-4 py-2 ${
-                destructive ? 'bg-red-600' : 'bg-sky-700 dark:bg-sky-400'
+                destructive ? 'bg-danger' : 'bg-primary'
               } ${busy ? 'opacity-50' : ''}`}
             >
-              {busy ? <ActivityIndicator color='white' /> : null}
+              {busy ? <ActivityIndicator color={colors.onPrimary} /> : null}
               <Text
                 className={`font-bold ${
-                  destructive
-                    ? 'text-white'
-                    : 'text-white dark:text-neutral-900'
+                  destructive ? 'text-on-danger' : 'text-on-primary'
                 }`}
               >
                 {confirmLabel}

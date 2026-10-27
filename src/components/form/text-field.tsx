@@ -25,7 +25,7 @@ export function TextField({
 }) {
   return (
     <View className='gap-1'>
-      <Text className='text-neutral-900 dark:text-neutral-100'>{label}</Text>
+      <Text className='text-ink'>{label}</Text>
       <TextInput
         accessibilityLabel={label}
         testID={testID}
@@ -38,15 +38,11 @@ export function TextField({
         keyboardType={keyboardType}
         // 複数行は上から書き始める（className では指定できない）
         style={multiline ? { textAlignVertical: 'top' } : undefined}
-        className={`rounded-lg border p-2.5 text-neutral-900 dark:text-neutral-100 ${
-          error
-            ? 'border-red-600'
-            : 'border-neutral-300 dark:border-neutral-700'
+        className={`rounded-lg border p-2.5 text-ink ${
+          error ? 'border-danger' : 'border-line'
         } ${multiline ? 'min-h-[120px]' : ''}`}
       />
-      {error ? (
-        <Text className='text-red-600 dark:text-red-400'>{error}</Text>
-      ) : null}
+      {error ? <Text className='text-danger'>{error}</Text> : null}
     </View>
   )
 }

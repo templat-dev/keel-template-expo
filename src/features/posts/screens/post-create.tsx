@@ -92,19 +92,17 @@ export function PostCreate() {
             )}
           />
           {error ? (
-            <Text className='text-red-600 dark:text-red-400'>
-              投稿に失敗しました
-            </Text>
+            <Text className='text-danger'>投稿に失敗しました</Text>
           ) : null}
           <Pressable
             accessibilityRole='button'
             disabled={formState.isSubmitting}
             onPress={() => handleSubmit(onSubmit)()}
-            className={`items-center rounded-lg bg-sky-700 p-3 dark:bg-sky-400 ${
+            className={`items-center rounded-lg bg-primary p-3 ${
               formState.isSubmitting ? 'opacity-50' : ''
             }`}
           >
-            <Text className='text-white dark:text-neutral-900'>登録</Text>
+            <Text className='text-on-primary'>登録</Text>
           </Pressable>
           <Dialog
             visible={leave !== null}

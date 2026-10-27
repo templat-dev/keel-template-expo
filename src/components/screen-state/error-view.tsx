@@ -9,14 +9,14 @@ export function ErrorView({
 }) {
   return (
     <View className='flex-1 items-center justify-center gap-3 p-4'>
-      <Text className='text-red-600 dark:text-red-400'>{message}</Text>
+      <Text className='text-danger'>{message}</Text>
       {onRetry ? (
         <Pressable
           accessibilityRole='button'
           onPress={onRetry}
-          className='rounded-lg bg-sky-700 px-4 py-2 dark:bg-sky-400'
+          className='rounded-lg bg-primary px-4 py-2'
         >
-          <Text className='text-white dark:text-neutral-900'>再試行</Text>
+          <Text className='text-on-primary'>再試行</Text>
         </Pressable>
       ) : null}
     </View>

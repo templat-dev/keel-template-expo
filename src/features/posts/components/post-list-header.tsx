@@ -23,13 +23,13 @@ export function PostListHeader() {
             label={formatFullName(user.firstName, user.lastName)}
           />
         ) : null}
-        <Text className='shrink text-neutral-900 dark:text-neutral-100'>
+        <Text className='shrink text-ink'>
           {name ? `${name} さん、こんにちは` : 'こんにちは'}
         </Text>
       </View>
       <Link href='/posts/new' asChild>
         <Pressable accessibilityRole='link'>
-          <Text className='text-sky-700 dark:text-sky-400'>投稿する</Text>
+          <Text className='text-primary'>投稿する</Text>
         </Pressable>
       </Link>
     </View>

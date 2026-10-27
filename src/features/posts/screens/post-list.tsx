@@ -35,18 +35,10 @@ export function PostList() {
               accessibilityRole='button'
               onPress={() => setKeyword(word)}
               className={`rounded-full border px-3 py-1 ${
-                selected
-                  ? 'border-sky-700 bg-sky-700 dark:border-sky-400 dark:bg-sky-400'
-                  : 'border-neutral-300 dark:border-neutral-700'
+                selected ? 'border-primary bg-primary' : 'border-line'
               }`}
             >
-              <Text
-                className={
-                  selected
-                    ? 'text-white dark:text-neutral-900'
-                    : 'text-neutral-900 dark:text-neutral-100'
-                }
-              >
+              <Text className={selected ? 'text-on-primary' : 'text-ink'}>
                 {word === undefined ? 'すべて' : word}
               </Text>
             </Pressable>
@@ -90,11 +82,9 @@ function PostListBody({
         >
           <Pressable
             accessibilityRole='link'
-            className={`border-b border-neutral-200 p-4 dark:border-neutral-800 ${CONTENT_WIDTH}`}
+            className={`border-b border-line-soft p-4 ${CONTENT_WIDTH}`}
           >
-            <Text className='text-neutral-900 dark:text-neutral-100'>
-              {item.title}
-            </Text>
+            <Text className='text-ink'>{item.title}</Text>
           </Pressable>
         </Link>
       )}

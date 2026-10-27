@@ -18,12 +18,8 @@ export function PostDetail({ postId }: { postId: number }) {
       <ScrollView contentContainerClassName='items-center p-4'>
         <Stack.Screen options={{ title: data.title }} />
         <Content className='gap-3'>
-          <Text className='text-xl font-bold text-neutral-900 dark:text-neutral-100'>
-            {data.title}
-          </Text>
-          <Text className='text-neutral-900 dark:text-neutral-100'>
-            {data.body}
-          </Text>
+          <Text className='text-xl font-bold text-ink'>{data.title}</Text>
+          <Text className='text-ink'>{data.body}</Text>
         </Content>
       </ScrollView>
     </Screen>

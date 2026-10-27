@@ -29,21 +29,19 @@ export function AccountSection() {
             label={formatFullName(user.firstName, user.lastName)}
           />
           <View className='shrink gap-1'>
-            <Text className='text-lg font-bold text-neutral-900 dark:text-neutral-100'>
+            <Text className='text-lg font-bold text-ink'>
               {formatFullName(user.firstName, user.lastName)}
             </Text>
-            <Text className='text-neutral-500 dark:text-neutral-400'>
-              {user.email}
-            </Text>
+            <Text className='text-ink-muted'>{user.email}</Text>
           </View>
         </View>
       )}
       <Pressable
         accessibilityRole='button'
         onPress={signOut}
-        className='items-center rounded-lg border border-red-600 p-3 dark:border-red-400'
+        className='items-center rounded-lg border border-danger p-3'
       >
-        <Text className='text-red-600 dark:text-red-400'>ログアウト</Text>
+        <Text className='text-danger'>ログアウト</Text>
       </Pressable>
     </View>
   )

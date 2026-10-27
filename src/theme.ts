@@ -4,31 +4,25 @@ import {
   type Theme as NavigationTheme
 } from 'expo-router'
 
-// アプリの色の定義（ライト / ダーク）。アプリごとに、ここの値を書き換える。
-//
+import palette from './colors.json'
+
 // JS で色の値が要る場所（ナビゲーションのテーマ、タブバーの色、ActivityIndicator など）は、ここを使う。
-// className で使う色は Tailwind の色。同じ色にそろえるため、各値に対応する Tailwind の色をコメントで添えている。
-export const lightColors = {
-  background: '#f2f2f2', // 画面の背景
-  surface: '#ffffff', // ヘッダー・タブバー・カードの背景
-  text: '#171717', // neutral-900
-  textMuted: '#737373', // neutral-500
-  border: '#d4d4d4', // neutral-300
-  primary: '#0369a1', // sky-700
-  onPrimary: '#ffffff',
-  danger: '#dc2626' // red-600
+// 色の定義は src/colors.json の 1 か所。className の色（bg-primary・text-ink など）も、同じ値から作られる。
+function toColors(p: typeof palette.light) {
+  return {
+    background: p.background,
+    surface: p.surface, // ヘッダー・タブバー・カードの背景
+    text: p.ink,
+    textMuted: p['ink-muted'],
+    border: p.line,
+    primary: p.primary,
+    onPrimary: p['on-primary'],
+    danger: p.danger
+  }
 }
 
-export const darkColors: typeof lightColors = {
-  background: '#000000',
-  surface: '#121212',
-  text: '#f5f5f5', // neutral-100
-  textMuted: '#a3a3a3', // neutral-400
-  border: '#404040', // neutral-700
-  primary: '#38bdf8', // sky-400
-  onPrimary: '#171717',
-  danger: '#f87171' // red-400
-}
+export const lightColors = toColors(palette.light)
+export const darkColors: typeof lightColors = toColors(palette.dark)
 
 export type Colors = typeof lightColors
 
