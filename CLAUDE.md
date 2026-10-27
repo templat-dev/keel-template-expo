@@ -35,6 +35,7 @@ Expo アプリの共通ベース。「この構成でアプリを作って」と
 * [画面は `Screen` と `Content` で包む](./docs/画面の書き方.md#セーフエリア)
 * [`useCallback`・`useMemo`・`React.memo` は書かない](./docs/画面の書き方.md#メモ化)
 * [スタイルは `className` で書く（`StyleSheet` は使わない）](./docs/選定ライブラリ.md#スタイルnativewind)
+* [色は `src/colors.json` の名前で書く（Tailwind の色を直書きしない）](./docs/選定ライブラリ.md#色デザイントークン)
 * [端末の種類の判定に、ブレークポイントは使わない](./docs/選定ライブラリ.md#ブレークポイント)
 
 通信と認証
