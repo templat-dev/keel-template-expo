@@ -25,11 +25,19 @@ export default function RootLayout() {
     }
   }, [colorScheme, setColorScheme])
 
+  const theme = colorScheme === 'dark' ? DarkTheme : DefaultTheme
+
   return (
     <QueryClientProvider client={queryClient}>
       {/* ヘッダーやタブバー、画面の背景を、端末のライト / ダークに合わせる */}
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
+      <ThemeProvider value={theme}>
+        <Stack
+          screenOptions={{
+            // 背景色を指定して、iOS 26 以降の透明なヘッダー（内容がヘッダーの下に入る）を使わない
+            headerStyle: { backgroundColor: theme.colors.card },
+            headerBackButtonDisplayMode: 'minimal'
+          }}
+        >
           <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
           <Stack.Screen name='posts/[id]' options={{ title: '投稿の詳細' }} />
           <Stack.Screen name='posts/new' options={{ title: '投稿の作成' }} />

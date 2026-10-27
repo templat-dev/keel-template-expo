@@ -1,22 +1,25 @@
 import { ScrollView } from 'react-native'
 
+import { Screen } from '@/components/layout/screen'
 import { TextField } from '@/components/form/text-field'
 import { useDisplayName } from '@/hooks/use-display-name'
 
 export function Settings() {
   const [displayName, setDisplayName] = useDisplayName()
   return (
-    <ScrollView
-      contentContainerClassName='p-4'
-      automaticallyAdjustKeyboardInsets
-      keyboardShouldPersistTaps='handled'
-    >
-      <TextField
-        label='表示名'
-        testID='display-name'
-        value={displayName}
-        onChangeText={setDisplayName}
-      />
-    </ScrollView>
+    <Screen>
+      <ScrollView
+        contentContainerClassName='p-4'
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps='handled'
+      >
+        <TextField
+          label='表示名'
+          testID='display-name'
+          value={displayName}
+          onChangeText={setDisplayName}
+        />
+      </ScrollView>
+    </Screen>
   )
 }

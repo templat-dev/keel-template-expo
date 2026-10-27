@@ -6,6 +6,7 @@ import { useListPosts } from '@/api/generated'
 import type { Post } from '@/api/generated/model'
 import { EmptyView } from '@/components/screen-state/empty-view'
 import { ErrorView } from '@/components/screen-state/error-view'
+import { Screen } from '@/components/layout/screen'
 import { Loading } from '@/components/screen-state/loading'
 import { useDisplayName } from '@/hooks/use-display-name'
 
@@ -19,7 +20,7 @@ export function PostList() {
   )
 
   return (
-    <View className='flex-1'>
+    <Screen>
       <View className='flex-row justify-between p-4'>
         <Text className='text-neutral-900 dark:text-neutral-100'>
           {displayName ? `${displayName} さん、こんにちは` : 'こんにちは'}
@@ -61,7 +62,7 @@ export function PostList() {
         data={data}
         onRetry={refetch}
       />
-    </View>
+    </Screen>
   )
 }
 
