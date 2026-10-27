@@ -38,7 +38,12 @@ export function PostCreate() {
   const onSubmit = async (values: PostFormValues) => {
     // 投稿者は、ログイン中のユーザー（ホームの挨拶で取得済み）
     if (!user) return
-    await mutateAsync({ data: toNewPost(values, user.id) })
+    try {
+      await mutateAsync({ data: toNewPost(values, user.id) })
+    } catch {
+      // 失敗は、下の「投稿に失敗しました」で伝える。前の画面へは戻らない
+      return
+    }
     disablePrevention()
     router.back()
   }

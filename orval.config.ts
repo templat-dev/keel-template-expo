@@ -5,6 +5,8 @@ export default defineConfig({
     input: './src/api/openapi.yaml',
     output: {
       target: './src/api/generated/index.ts',
+      // 契約から無くなった操作の出力（古いファイル）を消す。既定では残る
+      clean: true,
       schemas: './src/api/generated/model',
       client: 'react-query',
       httpClient: 'fetch',
