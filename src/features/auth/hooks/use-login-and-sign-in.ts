@@ -3,7 +3,7 @@ import { useSetAtom } from 'jotai'
 import { Platform } from 'react-native'
 
 import { authAtom } from '@/api/auth-state'
-import { getGetMeQueryKey, useLogin } from '@/api/generated/auth'
+import { getGetMeQueryKey, useLogin } from '@/api/generated'
 import * as tokenStorage from '@/api/token-storage'
 
 // ログインに成功したら、トークンの保存・認証状態の更新・ユーザーのキャッシュを行う。

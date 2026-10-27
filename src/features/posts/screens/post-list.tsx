@@ -2,8 +2,8 @@ import { Link } from 'expo-router'
 import { useState } from 'react'
 import { FlatList, Pressable, Text } from 'react-native'
 
-import { useListPosts } from '@/api/generated'
-import type { Post } from '@/api/generated/model'
+import { useSearchPosts } from '@/api/generated'
+import type { PostList as PostListData } from '@/api/generated/model'
 import { EmptyView } from '@/components/screen-state/empty-view'
 import { ErrorView } from '@/components/screen-state/error-view'
 import { Content, CONTENT_WIDTH } from '@/components/layout/content'
@@ -12,12 +12,13 @@ import { Loading } from '@/components/screen-state/loading'
 
 import { PostListHeader } from '../components/post-list-header'
 
-const USER_FILTERS = [undefined, 1, 2, 3]
+// 絞り込みのキーワード（undefined はすべて）
+const KEYWORDS = [undefined, 'love', 'history', 'night']
 
 export function PostList() {
-  const [userId, setUserId] = useState<number | undefined>(undefined)
-  const { data, isPending, error, refetch } = useListPosts(
-    userId === undefined ? undefined : { userId }
+  const [keyword, setKeyword] = useState<string | undefined>(undefined)
+  const { data, isPending, error, refetch } = useSearchPosts(
+    keyword === undefined ? undefined : { q: keyword }
   )
 
   return (
@@ -26,13 +27,13 @@ export function PostList() {
         <PostListHeader />
       </Content>
       <Content className='flex-row gap-2 px-4 pb-2'>
-        {USER_FILTERS.map((id) => {
-          const selected = userId === id
+        {KEYWORDS.map((word) => {
+          const selected = keyword === word
           return (
             <Pressable
-              key={id ?? 'all'}
+              key={word ?? 'all'}
               accessibilityRole='button'
-              onPress={() => setUserId(id)}
+              onPress={() => setKeyword(word)}
               className={`rounded-full border px-3 py-1 ${
                 selected
                   ? 'border-sky-700 bg-sky-700 dark:border-sky-400 dark:bg-sky-400'
@@ -46,7 +47,7 @@ export function PostList() {
                     : 'text-neutral-900 dark:text-neutral-100'
                 }
               >
-                {id === undefined ? 'すべて' : `ユーザー ${id}`}
+                {word === undefined ? 'すべて' : word}
               </Text>
             </Pressable>
           )
@@ -70,17 +71,17 @@ function PostListBody({
 }: {
   isPending: boolean
   error: Error | null
-  data: Post[] | undefined
+  data: PostListData | undefined
   onRetry: () => void
 }) {
   if (isPending) return <Loading />
   if (error) return <ErrorView message={error.message} onRetry={onRetry} />
-  if (!data || data.length === 0)
+  if (!data || data.posts.length === 0)
     return <EmptyView message='投稿がありません' />
 
   return (
     <FlatList
-      data={data}
+      data={data.posts}
       keyExtractor={(post) => String(post.id)}
       renderItem={({ item }) => (
         <Link

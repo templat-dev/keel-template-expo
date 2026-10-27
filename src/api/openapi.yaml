@@ -1,47 +1,64 @@
 openapi: 3.0.3
 info:
   title: Sample API
-  description: JSONPlaceholder の /posts を使うサンプルの API 契約
+  description: DummyJSON の認証（/auth）と投稿（/posts）を使うサンプルの API 契約
   version: 1.0.0
 servers:
-  - url: https://jsonplaceholder.typicode.com
+  - url: https://dummyjson.com
 paths:
-  /posts:
+  /auth/login:
+    post:
+      operationId: login
+      summary: ログイン
+      description: トークンは、本文の accessToken と、Set-Cookie（httpOnly）の両方で返る。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: ログインしたユーザーと、トークン
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: ユーザー名かパスワードが違う
+  /auth/me:
     get:
-      operationId: listPosts
-      summary: 投稿の一覧
+      operationId: getMe
+      summary: ログイン中のユーザー
+      description: ネイティブは Authorization ヘッダ、Web は Cookie で認証する。
+      responses:
+        '200':
+          description: ログイン中のユーザー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: 未ログイン、またはトークンが無効
+  /posts/search:
+    get:
+      operationId: searchPosts
+      summary: 投稿の一覧（キーワードでの絞り込み）
+      description: q を省くと、すべての投稿を返す。
       parameters:
-        - name: userId
+        - name: q
           in: query
           required: false
-          description: 投稿者で絞り込む
+          description: 絞り込むキーワード
           schema:
-            type: integer
+            type: string
       responses:
         '200':
           description: 投稿の一覧
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Post'
-    post:
-      operationId: createPost
-      summary: 投稿の作成
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/NewPost'
-      responses:
-        '201':
-          description: 作成した投稿
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Post'
+                $ref: '#/components/schemas/PostList'
   /posts/{id}:
     get:
       operationId: getPost
@@ -59,11 +76,66 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Post'
+        '404':
+          description: 投稿が無い
+  /posts/add:
+    post:
+      operationId: createPost
+      summary: 投稿の作成
+      description: 保存はされない。作成した投稿を返すだけ（次の id が付く）。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPost'
+      responses:
+        '201':
+          description: 作成した投稿
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
 components:
   schemas:
+    LoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    User:
+      type: object
+      required: [id, username, email, firstName, lastName, image]
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        image:
+          type: string
+          description: アイコン画像の URL
+    LoginResponse:
+      allOf:
+        - $ref: '#/components/schemas/User'
+        - type: object
+          required: [accessToken]
+          properties:
+            accessToken:
+              type: string
+            refreshToken:
+              type: string
     Post:
       type: object
-      required: [id, userId, title, body]
+      required: [id, userId, title, body, tags]
       properties:
         id:
           type: integer
@@ -73,6 +145,24 @@ components:
           type: string
         body:
           type: string
+        tags:
+          type: array
+          items:
+            type: string
+    PostList:
+      type: object
+      required: [posts, total, skip, limit]
+      properties:
+        posts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Post'
+        total:
+          type: integer
+        skip:
+          type: integer
+        limit:
+          type: integer
     NewPost:
       type: object
       required: [userId, title, body]

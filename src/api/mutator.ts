@@ -3,7 +3,7 @@ import { Platform } from 'react-native'
 import { getDefaultStore } from 'jotai'
 
 import { authAtom, resetAuth } from './auth-state'
-import { API_BASE_URL, AUTH_API_BASE_URL } from '@/constants'
+import { API_BASE_URL } from '@/constants'
 
 export class ApiError<Body = unknown> extends Error {
   constructor(
@@ -15,30 +15,26 @@ export class ApiError<Body = unknown> extends Error {
   }
 }
 
-// withAuth: 認証を付ける接続先か。トークンは、それを発行した接続先にだけ送る（別の接続先へ送ると漏れる）。
-async function request<T>(
-  baseUrl: string,
-  withAuth: boolean,
+// 接続先は 1 つ（認証もメモも同じ DummyJSON）。トークンを発行した接続先にしか送らない。
+export async function customFetch<T>(
   url: string,
   options: RequestInit
 ): Promise<T> {
   const init: RequestInit = { ...options }
-  if (withAuth) {
-    if (Platform.OS === 'web') {
-      // Web は Cookie（httpOnly）で認証する。トークンのヘッダは付けない
-      init.credentials = 'include'
-    } else {
-      const auth = getDefaultStore().get(authAtom)
-      if (auth.status === 'authenticated' && auth.token) {
-        const headers = new Headers(options.headers)
-        headers.set('Authorization', `Bearer ${auth.token}`)
-        init.headers = headers
-      }
+  if (Platform.OS === 'web') {
+    // Web は Cookie（httpOnly）で認証する。トークンのヘッダは付けない
+    init.credentials = 'include'
+  } else {
+    const auth = getDefaultStore().get(authAtom)
+    if (auth.status === 'authenticated' && auth.token) {
+      const headers = new Headers(options.headers)
+      headers.set('Authorization', `Bearer ${auth.token}`)
+      init.headers = headers
     }
   }
 
-  const response = await fetch(`${baseUrl}${url}`, init)
-  if (withAuth && response.status === 401) {
+  const response = await fetch(`${API_BASE_URL}${url}`, init)
+  if (response.status === 401) {
     await resetAuth()
   }
   if (!response.ok) {
@@ -51,14 +47,6 @@ async function request<T>(
   }
   return (await response.json()) as T
 }
-
-// 認証を使わない接続先（サンプルの JSONPlaceholder）
-export const customFetch = <T>(url: string, options: RequestInit): Promise<T> =>
-  request<T>(API_BASE_URL, false, url, options)
-
-// 認証を使う接続先（サンプルの DummyJSON）
-export const authFetch = <T>(url: string, options: RequestInit): Promise<T> =>
-  request<T>(AUTH_API_BASE_URL, true, url, options)
 
 // react-query のエラーの型を上書きする（Orval の規約）。画面では error.message を使える。
 export type ErrorType<Body> = ApiError<Body>

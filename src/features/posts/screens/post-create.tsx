@@ -8,6 +8,7 @@ import { Dialog } from '@/components/dialog/dialog'
 import { TextField } from '@/components/form/text-field'
 import { Content } from '@/components/layout/content'
 import { Screen } from '@/components/layout/screen'
+import { useCurrentUser } from '@/hooks/use-current-user'
 
 import { useCreatePostAndRefresh } from '../hooks/use-create-post-and-refresh'
 import {
@@ -16,11 +17,9 @@ import {
   type PostFormValues
 } from '../schemas/post-form'
 
-// JSONPlaceholder には認証がないので、投稿者は固定にする。
-const SAMPLE_USER_ID = 1
-
 export function PostCreate() {
   const router = useRouter()
+  const { data: user } = useCurrentUser()
   const { mutateAsync, error } = useCreatePostAndRefresh()
   const { control, handleSubmit, formState } = useForm<PostFormValues>({
     resolver: zodResolver(postFormSchema),
@@ -37,7 +36,9 @@ export function PostCreate() {
   )
 
   const onSubmit = async (values: PostFormValues) => {
-    await mutateAsync({ data: toNewPost(values, SAMPLE_USER_ID) })
+    // 投稿者は、ログイン中のユーザー（ホームの挨拶で取得済み）
+    if (!user) return
+    await mutateAsync({ data: toNewPost(values, user.id) })
     disablePrevention()
     router.back()
   }

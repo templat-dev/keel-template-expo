@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { Platform } from 'react-native'
 
 import { authAtom } from '@/api/auth-state'
-import { getGetMeQueryKey, getMe } from '@/api/generated/auth'
+import { getGetMeQueryKey, getMe } from '@/api/generated'
 import * as tokenStorage from '@/api/token-storage'
 
 // 起動時に、認証状態を復元する。済むまで状態は loading で、ルートの _layout は画面を描かない。

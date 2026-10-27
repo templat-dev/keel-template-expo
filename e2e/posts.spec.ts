@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-import { isPostsApi, mockApi } from './mock-api'
+import { isApi, mockApi } from './mock-api'
 
 // 投稿の画面は、ログイン済みで使う（mockApi は既定でログイン済み）。
 
@@ -9,14 +9,14 @@ test('投稿の一覧から詳細を開ける', async ({ page }) => {
   await page.goto('/')
   await expect(page.getByText('最初の投稿')).toBeVisible()
   await page.getByText('最初の投稿').click()
-  await expect(page.getByText('最初の本文')).toBeVisible()
+  await expect(page.getByText('love の話')).toBeVisible()
 })
 
-test('ユーザーで絞り込むと、その投稿だけが出る', async ({ page }) => {
+test('キーワードで絞り込むと、その投稿だけが出る', async ({ page }) => {
   await mockApi(page)
   await page.goto('/')
   await expect(page.getByText('二番目の投稿')).toBeVisible()
-  await page.getByRole('button', { name: 'ユーザー 1' }).click()
+  await page.getByRole('button', { name: 'love' }).click()
   await expect(page.getByText('最初の投稿')).toBeVisible()
   await expect(page.getByText('二番目の投稿')).toBeHidden()
 })
@@ -43,8 +43,7 @@ test('空のまま登録するとエラーが出て、入力すると投稿で�
   await expect(page.getByText('本文を入力してください')).toBeVisible()
 
   const posted = page.waitForRequest(
-    (request) =>
-      request.method() === 'POST' && isPostsApi(new URL(request.url()))
+    (request) => request.method() === 'POST' && isApi(new URL(request.url()))
   )
   await page.getByTestId('post-title').fill('新しい投稿')
   await page.getByTestId('post-body').fill('新しい本文')
