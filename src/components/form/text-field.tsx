@@ -1,4 +1,4 @@
-import { Text, TextInput, View } from 'react-native'
+import { type KeyboardTypeOptions, Text, TextInput, View } from 'react-native'
 
 export function TextField({
   label,
@@ -9,6 +9,7 @@ export function TextField({
   multiline,
   secureTextEntry,
   autoCapitalize,
+  keyboardType,
   testID
 }: {
   label: string
@@ -19,6 +20,7 @@ export function TextField({
   multiline?: boolean
   secureTextEntry?: boolean
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters'
+  keyboardType?: KeyboardTypeOptions
   testID?: string
 }) {
   return (
@@ -33,6 +35,7 @@ export function TextField({
         multiline={multiline}
         secureTextEntry={secureTextEntry}
         autoCapitalize={autoCapitalize}
+        keyboardType={keyboardType}
         // 複数行は上から書き始める（className では指定できない）
         style={multiline ? { textAlignVertical: 'top' } : undefined}
         className={`rounded-lg border p-2.5 text-neutral-900 dark:text-neutral-100 ${

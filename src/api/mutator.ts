@@ -15,7 +15,7 @@ export class ApiError<Body = unknown> extends Error {
   }
 }
 
-// 接続先は 1 つ（認証もメモも同じ DummyJSON）。トークンを発行した接続先にしか送らない。
+// 接続先は 1 つ（認証もデータも同じ API）。トークンを発行した接続先にしか送らない。
 export async function customFetch<T>(
   url: string,
   options: RequestInit

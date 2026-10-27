@@ -33,7 +33,6 @@ export const posts = [
   }
 ]
 
-// 画像は実物に取りに行かない（1 ピクセルの PNG を返す）。
 export const user = {
   id: 1,
   username: 'emilys',
@@ -43,6 +42,7 @@ export const user = {
   image: 'http://api.test/icon/emilys/128'
 }
 
+// 画像は実物に取りに行かない（1 ピクセルの PNG を返す）。
 const PIXEL = Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
   'base64'
