@@ -6,7 +6,7 @@ Expo アプリの共通ベース。「この構成でアプリを作って」と
 
 * [フォルダ構成](./docs/フォルダ構成.md): どこに置くか（route、feature、共通フォルダ、platform 別コード、style と test）
 * [選定ライブラリ](./docs/選定ライブラリ.md): 何を使うか、なぜか、どう使うか（TanStack Query、Orval）
-* [開発環境と設定](./docs/開発環境と設定.md): 環境変数、開発ビルドと Expo Go、Lint・Format・型、`app.json` の既定、ビルドと配布（EAS）
+* [開発環境と設定](./docs/開発環境と設定.md): 環境変数、開発ビルドと Expo Go、Lint・Format・型、`app.json` の既定、CI、ビルドと配布（EAS）
 * [テスト](./docs/テスト.md): 何をどのテストで確かめるか（Vitest、Playwright）
 * [画面の書き方](./docs/画面の書き方.md): データ取得を伴う画面の 4 状態、フォーム、メモ化
 * [認証](./docs/認証.md): トークンの保存と扱い（`expo-secure-store`、Web は Cookie）
