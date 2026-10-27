@@ -7,6 +7,7 @@ import { useEffect } from 'react'
 import { Platform, useColorScheme } from 'react-native'
 
 import { queryClient } from '@/api/query-client'
+import { BackButton } from '@/components/layout/back-button'
 import { navigationTheme } from '@/theme'
 
 // URL を直接開いても、戻る先として (tabs) が履歴の底に積まれる。
@@ -36,8 +37,18 @@ export default function RootLayout() {
           screenOptions={{
             // iOS 26 以降の既定（透明なヘッダーで、内容がヘッダーの下に入る）を使わない
             headerTransparent: false,
-            // 戻るボタンに、遷移元のルートグループ名（(tabs)）を出さない
-            headerBackButtonDisplayMode: 'minimal'
+            // iOS の戻るボタンは Liquid Glass で描かれ、長押しで遷移元（(tabs)）が出る。Android と同じにするため、自前のものにする。
+            // hidesSharedBackground は、ボタンの背景（ガラス）を外す。Android は標準の戻るボタンのまま。
+            unstable_headerLeftItems: ({ canGoBack }) =>
+              canGoBack
+                ? [
+                    {
+                      type: 'custom',
+                      element: <BackButton />,
+                      hidesSharedBackground: true
+                    }
+                  ]
+                : []
           }}
         >
           <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
