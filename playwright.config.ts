@@ -6,7 +6,9 @@ const PORT = 8090
 
 export default defineConfig({
   testDir: './e2e',
-  use: { baseURL: `http://localhost:${PORT}` },
+  // CI では、失敗の調査に使える HTML のレポートを出す（playwright-report/）。
+  reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : 'list',
+  use: { baseURL: `http://localhost:${PORT}`, trace: 'retain-on-failure' },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   // Expo の Web 開発サーバーを起動してから実行する。API は e2e 側で差し替えるので、
   // 接続先は実在しないホストにしておく（実物には届かない）。
