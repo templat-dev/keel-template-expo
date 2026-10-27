@@ -1,64 +1,33 @@
 # keel-template-expo
 
-Expo アプリの共通ベース。フォルダ構成・選定ライブラリ・開発環境・テスト方針を決めた上で、動くサンプルアプリを載せている。ここから新しいアプリを作る。
+Expo アプリの共通ベース。フォルダ構成・選定ライブラリ・開発環境・テスト方針を決めた上で、動くサンプルアプリを載せている。ここから新しいアプリを作る（手順は[アプリにする](./docs/アプリにする.md)）。
 
-* ルーティング: Expo Router
-* 状態・データ: TanStack Query、Jotai、Orval（OpenAPI から API クライアントを生成）
-* フォーム: React Hook Form + Zod
-* 認証: `expo-secure-store`（ネイティブ）、`httpOnly` Cookie（Web）
-* 画像: `expo-image`
-* スタイル: NativeWind（Tailwind CSS v3）
-* テスト: Vitest（単体）、Playwright（E2E）
-
-決めたことと、その理由は [docs/](./docs/) にある。AI（Claude）に作業を頼むときの入口は [CLAUDE.md](./CLAUDE.md)。
+決めたことと、その理由は [docs/](./docs/) にある。資料の一覧と、AI（Claude）に作業を頼むときの入口は [CLAUDE.md](./CLAUDE.md)。使っているライブラリは[選定ライブラリ](./docs/選定ライブラリ.md#採用一覧)。
 
 ## 実行手順
 
-必要なもの: Node 24（`package.json` の `engines` は `^24.3.0`）。
+必要なもの: Node 24。
 
 ```bash
-nvm use 24                       # Node を 24 にする（nvm の場合）
+nvm use                          # Node を .nvmrc の版（24）にする（nvm の場合）
 npm install
 cp .env.example .env.local       # 接続先の API を設定する（.env.local はコミットされない）
 npm run web                      # http://localhost:8081 をブラウザで開く
 ```
 
-* iOS / Android では、Expo Go ではなく**開発ビルド**で動かす（`npm run ios` / `npm run android`）。作り方は [開発環境と設定](./docs/開発環境と設定.md#開発ビルドと-expo-go) を見る。
-* サンプルは、公開の API に接続する。投稿は [JSONPlaceholder](https://jsonplaceholder.typicode.com)（POST は保存されないので、作成しても一覧には出ない）、認証は [DummyJSON](https://dummyjson.com)。ログインは、ユーザー名 `emilys`、パスワード `emilyspass`。
+* iOS / Android では、Expo Go ではなく**開発ビルド**で動かす。作り方は[開発環境と設定](./docs/開発環境と設定.md#開発ビルドの作り方)。
+* サンプルは、公開のダミー API [DummyJSON](https://dummyjson.com) に接続する（認証も投稿も同じ接続先）。ログインは、ユーザー名 `emilys`、パスワード `emilyspass`。投稿の作成は保存されないので、作成しても一覧には出ない。
 * 実物の DummyJSON に繋いだ Web では、Cookie が送られないため、ログインしてもリロードでログイン画面に戻る（[認証](./docs/認証.md#web-の-cookie-が送られる条件)）。ネイティブは、再起動してもログインのまま。
-
-## コマンド
-
-| コマンド                                                        | 内容                                                                      |
-| --------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| `npm start` / `npm run web` / `npm run ios` / `npm run android` | 開発サーバーの起動                                                        |
-| `npm run lint`                                                  | ESLint と Prettier の検査                                                 |
-| `npm run format`                                                | Prettier で整形                                                           |
-| `npm run typecheck`                                             | 型の検査（typed routes の型を生成してから `tsc`）                         |
-| `npm test`                                                      | 単体テスト（Vitest）                                                      |
-| `npm run e2e`                                                   | E2E テスト（Playwright）。初回は `npx playwright install chromium` が要る |
-| `npm run generate`                                              | `src/api/openapi.yaml` から API クライアントを生成（Orval）               |
+* コマンド（lint、型、テスト、E2E、API クライアントの生成）の一覧は、[開発環境と設定](./docs/開発環境と設定.md#スクリプト)。
 
 ## サンプルアプリ
 
 ログインと、投稿の一覧・詳細・作成、設定の画面。構成の使い方の見本になる。
 
-| 画面                 | 見本になっていること                                                                                            |
-| -------------------- | --------------------------------------------------------------------------------------------------------------- |
-| ログイン | 新しい feature（`auth`）、React Hook Form + Zod、ログイン後の処理の hook、`Stack.Protected` で未ログインを入れない、起動時の復元（済むまで描かない） |
-| ホーム（投稿の一覧） | 生成された hook でのデータ取得、クエリパラメータでの絞り込み、4 状態（Loading・Error・Empty・Data）、`FlatList`、`expo-image` のアバター、最大幅と中央寄せ（`sm:`・`md:`・`lg:`） |
-| 投稿の詳細           | 動的ルート（route で `id` を読み、props で画面に渡す）、データに依存するタイトル                                |
-| 投稿の作成           | React Hook Form + Zod、更新後のキャッシュの無効化、入力中に離れるときの確認（`Dialog`）                         |
-| 設定                 | Jotai の atom（AsyncStorage に保存）、複数の feature で使うので `src/hooks/` に置く、ログイン中のユーザーの表示とログアウト |
-
-## 資料
-
-| 資料                                           | 内容                                                |
-| ---------------------------------------------- | --------------------------------------------------- |
-| [フォルダ構成](./docs/フォルダ構成.md)         | どこに置くか                                        |
-| [選定ライブラリ](./docs/選定ライブラリ.md)     | 何を使うか、なぜか、どう使うか                      |
-| [開発環境と設定](./docs/開発環境と設定.md)     | 環境変数、開発ビルド、Lint・Format、`app.json`、CI、EAS |
-| [テスト](./docs/テスト.md)                     | 何をどのテストで確かめるか                          |
-| [画面の書き方](./docs/画面の書き方.md)         | 4 状態、フォーム、ダイアログ、一覧、メモ化          |
-| [認証](./docs/認証.md)                         | ログイン、トークンの保存と扱い、Web の Cookie       |
-| [AIとの進め方](./docs/AIとの進め方.md)（任意） | 依存の追加、完了の報告、公式ドキュメントの確認      |
+| 画面                 | 見本になっていること                                                                                                                                                                            |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ログイン             | 新しい feature（`auth`）、React Hook Form + Zod、ログイン後の処理の hook、`Stack.Protected` で未ログインを入れない、起動時の復元（済むまで描かない）                                            |
+| ホーム（投稿の一覧） | 生成された hook でのデータ取得、クエリパラメータ（キーワード）での絞り込み、4 状態（Loading・Error・Empty・Data）、`FlatList`、`expo-image` のアバター、最大幅と中央寄せ（`sm:`・`md:`・`lg:`） |
+| 投稿の詳細           | 動的ルート（route で `id` を読み、props で画面に渡す）、データに依存するタイトル                                                                                                                |
+| 投稿の作成           | React Hook Form + Zod、更新後のキャッシュの無効化、入力中に離れるときの確認（`Dialog`）、ログイン中のユーザーを投稿者にする                                                                     |
+| 設定                 | Jotai の atom（AsyncStorage に保存）、複数の feature で使うので `src/hooks/` に置く、ログイン中のユーザーの表示とログアウト                                                                     |
