@@ -25,8 +25,10 @@ export function PostList() {
         <Text className='text-neutral-900 dark:text-neutral-100'>
           {displayName ? `${displayName} さん、こんにちは` : 'こんにちは'}
         </Text>
-        <Link href='/posts/new' className='text-sky-700 dark:text-sky-400'>
-          投稿する
+        <Link href='/posts/new' asChild>
+          <Pressable accessibilityRole='link'>
+            <Text className='text-sky-700 dark:text-sky-400'>投稿する</Text>
+          </Pressable>
         </Link>
       </View>
       <View className='flex-row gap-2 px-4 pb-2'>
@@ -89,9 +91,16 @@ function PostListBody({
       renderItem={({ item }) => (
         <Link
           href={{ pathname: '/posts/[id]', params: { id: String(item.id) } }}
-          className='border-b border-neutral-200 p-4 text-neutral-900 dark:border-neutral-800 dark:text-neutral-100'
+          asChild
         >
-          {item.title}
+          <Pressable
+            accessibilityRole='link'
+            className='border-b border-neutral-200 p-4 dark:border-neutral-800'
+          >
+            <Text className='text-neutral-900 dark:text-neutral-100'>
+              {item.title}
+            </Text>
+          </Pressable>
         </Link>
       )}
     />

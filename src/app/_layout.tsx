@@ -1,12 +1,13 @@
 import '../global.css'
 
 import { QueryClientProvider } from '@tanstack/react-query'
-import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router'
+import { Stack, ThemeProvider } from 'expo-router'
 import { useColorScheme as useNativeWindColorScheme } from 'nativewind'
 import { useEffect } from 'react'
 import { Platform, useColorScheme } from 'react-native'
 
 import { queryClient } from '@/api/query-client'
+import { navigationTheme } from '@/theme'
 
 // URL を直接開いても、戻る先として (tabs) が履歴の底に積まれる。
 export const unstable_settings = { anchor: '(tabs)' }
@@ -25,7 +26,7 @@ export default function RootLayout() {
     }
   }, [colorScheme, setColorScheme])
 
-  const theme = colorScheme === 'dark' ? DarkTheme : DefaultTheme
+  const theme = navigationTheme(colorScheme === 'dark')
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -33,8 +34,9 @@ export default function RootLayout() {
       <ThemeProvider value={theme}>
         <Stack
           screenOptions={{
-            // 背景色を指定して、iOS 26 以降の透明なヘッダー（内容がヘッダーの下に入る）を使わない
-            headerStyle: { backgroundColor: theme.colors.card },
+            // iOS 26 以降の既定（透明なヘッダーで、内容がヘッダーの下に入る）を使わない
+            headerTransparent: false,
+            // 戻るボタンに、遷移元のルートグループ名（(tabs)）を出さない
             headerBackButtonDisplayMode: 'minimal'
           }}
         >
