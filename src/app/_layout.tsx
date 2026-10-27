@@ -16,14 +16,14 @@ export default function RootLayout() {
   const colorScheme = useColorScheme()
   const { setColorScheme } = useNativeWindColorScheme()
 
-  // darkMode: 'class' では、dark: のクラスが端末の設定に自動では従わない。端末の設定を NativeWind に渡す。
-  // Web は、開発サーバーでは NativeWind が class を付けるのが間に合わないので、自分で付ける。
+  // Web は、darkMode: 'class' だと dark: のクラスが端末の設定に自動では従わないので、端末の設定を NativeWind と html に渡す。
+  // 開発サーバーでは NativeWind が class を付けるのが間に合わないので、自分で付ける。
+  // ネイティブでは setColorScheme を呼ばない（呼ぶと端末の設定が固定され、起動中の切り替えが反映されなくなる）。
   useEffect(() => {
+    if (Platform.OS !== 'web') return
     const scheme = colorScheme === 'dark' ? 'dark' : 'light'
     setColorScheme(scheme)
-    if (Platform.OS === 'web') {
-      document.documentElement.classList.toggle('dark', scheme === 'dark')
-    }
+    document.documentElement.classList.toggle('dark', scheme === 'dark')
   }, [colorScheme, setColorScheme])
 
   const theme = navigationTheme(colorScheme === 'dark')
