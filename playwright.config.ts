@@ -17,7 +17,11 @@ export default defineConfig({
     url: `http://localhost:${PORT}`,
     reuseExistingServer: false,
     // .env.local があると、その値が優先される（e2e 側で接続先に依存しないようにしてある）。
-    env: { EXPO_PUBLIC_API_BASE_URL: 'http://api.test', CI: '1' },
+    env: {
+      EXPO_PUBLIC_API_BASE_URL: 'http://api.test',
+      EXPO_PUBLIC_AUTH_API_BASE_URL: 'http://auth.test',
+      CI: '1'
+    },
     timeout: 120_000
   }
 })

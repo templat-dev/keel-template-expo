@@ -1,56 +1,8 @@
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
-// API の接続先は、.env.local の有無で変わる（.env.local の値が優先される）。ホストは見ず、
-// アプリ自身（localhost）以外へ出る /posts へのリクエストを API として差し替える。
-const isApi = (url: URL) =>
-  url.hostname !== 'localhost' && url.pathname.startsWith('/posts')
-const CORS = {
-  'access-control-allow-origin': '*',
-  'access-control-allow-headers': '*'
-}
+import { isPostsApi, mockApi } from './mock-api'
 
-const posts = [
-  { id: 1, userId: 1, title: '最初の投稿', body: '最初の本文' },
-  { id: 2, userId: 2, title: '二番目の投稿', body: '二番目の本文' }
-]
-
-// API は実物に届かせず、ここで差し替える。
-async function mockApi(page: Page, options: { failList?: boolean } = {}) {
-  let failList = options.failList ?? false
-  await page.route(isApi, async (route) => {
-    const request = route.request()
-    const url = new URL(request.url())
-    if (request.method() === 'OPTIONS') {
-      return route.fulfill({ status: 204, headers: CORS })
-    }
-    if (request.method() === 'POST' && url.pathname === '/posts') {
-      const body = request.postDataJSON()
-      return route.fulfill({
-        status: 201,
-        headers: CORS,
-        json: { id: 101, ...body }
-      })
-    }
-    if (url.pathname === '/posts') {
-      if (failList)
-        return route.fulfill({ status: 500, headers: CORS, json: {} })
-      const userId = url.searchParams.get('userId')
-      const list = userId
-        ? posts.filter((p) => String(p.userId) === userId)
-        : posts
-      return route.fulfill({ status: 200, headers: CORS, json: list })
-    }
-    const detail = posts.find((p) => url.pathname === `/posts/${p.id}`)
-    if (detail)
-      return route.fulfill({ status: 200, headers: CORS, json: detail })
-    return route.fulfill({ status: 404, headers: CORS, json: {} })
-  })
-  return {
-    recover: () => {
-      failList = false
-    }
-  }
-}
+// 投稿の画面は、ログイン済みで使う（mockApi は既定でログイン済み）。
 
 test('投稿の一覧から詳細を開ける', async ({ page }) => {
   await mockApi(page)
@@ -91,7 +43,8 @@ test('空のまま登録するとエラーが出て、入力すると投稿で�
   await expect(page.getByText('本文を入力してください')).toBeVisible()
 
   const posted = page.waitForRequest(
-    (request) => request.method() === 'POST' && isApi(new URL(request.url()))
+    (request) =>
+      request.method() === 'POST' && isPostsApi(new URL(request.url()))
   )
   await page.getByTestId('post-title').fill('新しい投稿')
   await page.getByTestId('post-body').fill('新しい本文')

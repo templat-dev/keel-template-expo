@@ -16,6 +16,7 @@ permissions:
 env:
   # 実在する公開 API（.env.example と同じ値）。E2E は API を差し替えるので、これには届かない。
   EXPO_PUBLIC_API_BASE_URL: https://jsonplaceholder.typicode.com
+  EXPO_PUBLIC_AUTH_API_BASE_URL: https://dummyjson.com
 
 jobs:
   lint:

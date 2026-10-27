@@ -7,6 +7,8 @@ export function TextField({
   onBlur,
   error,
   multiline,
+  secureTextEntry,
+  autoCapitalize,
   testID
 }: {
   label: string
@@ -15,6 +17,8 @@ export function TextField({
   onBlur?: () => void
   error?: string
   multiline?: boolean
+  secureTextEntry?: boolean
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters'
   testID?: string
 }) {
   return (
@@ -27,6 +31,8 @@ export function TextField({
         onChangeText={onChangeText}
         onBlur={onBlur}
         multiline={multiline}
+        secureTextEntry={secureTextEntry}
+        autoCapitalize={autoCapitalize}
         // 複数行は上から書き始める（className では指定できない）
         style={multiline ? { textAlignVertical: 'top' } : undefined}
         className={`rounded-lg border p-2.5 text-neutral-900 dark:text-neutral-100 ${

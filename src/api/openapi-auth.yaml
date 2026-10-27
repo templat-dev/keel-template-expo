@@ -1,0 +1,79 @@
+openapi: 3.0.3
+info:
+  title: Auth API
+  description: DummyJSON の認証（/auth/login・/auth/me）を使うサンプルの API 契約
+  version: 1.0.0
+servers:
+  - url: https://dummyjson.com
+paths:
+  /auth/login:
+    post:
+      operationId: login
+      summary: ログイン
+      description: トークンは、本文の accessToken と、Set-Cookie（httpOnly）の両方で返る。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: ログインしたユーザーと、トークン
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: ユーザー名かパスワードが違う
+  /auth/me:
+    get:
+      operationId: getMe
+      summary: ログイン中のユーザー
+      description: ネイティブは Authorization ヘッダ、Web は Cookie で認証する。
+      responses:
+        '200':
+          description: ログイン中のユーザー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: 未ログイン、またはトークンが無効
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    User:
+      type: object
+      required: [id, username, email, firstName, lastName, image]
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        image:
+          type: string
+          description: アバター画像の URL
+    LoginResponse:
+      allOf:
+        - $ref: '#/components/schemas/User'
+        - type: object
+          required: [accessToken]
+          properties:
+            accessToken:
+              type: string
+            refreshToken:
+              type: string
